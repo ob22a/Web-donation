@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NGO Registration</title>
-    <link rel="stylesheet" href="./style/base.css">
-    <link rel="stylesheet" href="./style/header.css">
-    <link rel="stylesheet" href="./style/register.css">
-    <link rel="stylesheet" href="./style/responsive.css">
-</head>
-<body>
+    <link rel="stylesheet" href="./style/base.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style/register.css" />
+    <link rel="stylesheet" href="./style/responsive.css" />
+  </head>
+  <body class="page-register">
     <header class="main-header">
-        <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
-        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-            ☰
-        </button>
-        <nav class="primary-nav">
-            <a href="/">Home</a>
-            <a href="/NGOs.html">NGOs</a>
-            <a href="/about.html">About</a>
-            <a href="/login.html">Login</a>
-            <a href="/register.html">Register</a>
-        </nav>
+      <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
+      <button
+        class="nav-toggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+      <nav class="primary-nav">
+        <a href="/">Home</a>
+        <a href="NGOs.html">NGOs</a>
+        <a href="about.html">About</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+      </nav>
     </header>
 
     <div class="page-content">
-        <div class="auth-section">
-            <form class="auth-card">
-                <h2 class="auth-title">Register</h2>
-                <div>
-                    <label>Name</label>
-                    <input required type="text">
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input required type="email">
-                </div>
-                <div>
-                    <label>Password</label>
-                    <input required type="password">
-                </div>
-                <button type="submit" class="primary-button">
-                    Register
-                </button>
-                <div class="auth-secondary-action">
-                    <span>Are you an NGO</span>
-                    <a href="/NGORegister.html" class="link-button">
-                        Register as an NGO
-                    </a>
-                </div>
-            </form>
-        </div>
+      <div class="auth-section">
+        <form class="auth-card">
+          <h2 class="auth-title">Register</h2>
+          <div>
+            <label>Name</label>
+            <input required type="text" />
+          </div>
+          <div>
+            <label>Email</label>
+            <input required type="email" />
+          </div>
+          <div>
+            <label>Password</label>
+            <input required type="password" />
+          </div>
+          <button type="submit" class="primary-button">Register</button>
+          <div class="auth-secondary-action">
+            <span>Are you an NGO</span>
+            <a href="/NGORegister.html" class="link-button">
+              Register as an NGO
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
 
     <script>
-        (function () {
-            const header = document.querySelector('.main-header');
-            const toggle = document.querySelector('.nav-toggle');
+      (function () {
+        const header = document.querySelector(".main-header");
+        const toggle = document.querySelector(".nav-toggle");
 
-            if (!header || !toggle) return;
+        if (!header || !toggle) return;
 
-            toggle.addEventListener('click', function () {
-                const isOpen = header.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-            });
-        })();
+        toggle.addEventListener("click", function () {
+          const isOpen = header.classList.toggle("nav-open");
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      })();
     </script>
-</body>
+  </body>
 </html>

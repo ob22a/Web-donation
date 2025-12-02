@@ -1,544 +1,494 @@
-/* --- Global Reset & Variables --- */
-:root {
-    --primary-green: #15803d; /* Tailwind green-700 */
-    --dark-green: #166534;    /* Tailwind green-800 */
-    --light-green: #f0fdf4;   /* Tailwind green-50 */
-    --accent-green: #86efac;  /* Adjusted for brighter border green-300 */
-    --white: #ffffff;
-    --gray-text: #374151;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --radius: 1rem;
+
+body.page-landing {
+  --bg-color: var(--light-green);
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: system-ui, -apple-system, sans-serif;
-    color: var(--gray-text);
-    background-color: var(--light-green);
-    line-height: 1.5;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-/* --- Layout Wrappers --- */
 .main-wrapper {
-    background-image: url('./tree.jpg');
-    background-size: cover;
-    background-position: center;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  background-image: url("./tree.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-    flex: 1;
-    width: 100%;
+  flex: 1;
+  width: 100%;
 }
 
-/* -------------------------------------- */
-/* --- UPDATED NAVIGATION STYLES --- */
-/* -------------------------------------- */
 .navbar {
-    background: var(--white);
-    padding: 0 2rem; 
-    box-shadow: none; 
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end; /* Align items to the bottom to sit tabs on the border */
-    border-bottom: 2px solid var(--accent-green); /* border-green-300 border-b-2 */
-    position: relative;
-    overflow: visible; /* Important for the active tab's overlap effect */
+  background: var(--white);
+  padding: 0 2rem;
+  box-shadow: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid var(--accent-green);
+  position: relative;
+  overflow: visible;
 }
 
 .nav-brand {
-    font-size: 1.25rem; /* text-xl */
-    font-weight: bold;
-    color: var(--primary-green);
-    /* Adding padding to lift the brand above the border */
-    padding-top: 1rem; 
-    padding-bottom: 0.5rem; 
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--primary-green);
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
 }
 
 .nav-links-wrapper {
-    display: flex;
-    gap: 0.5rem;
-    align-items: flex-end; 
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
 }
 
 .tab {
-    padding: 0.5rem 1.25rem; /* px-5 py-2 */
-    font-weight: 500; /* font-medium */
-    color: var(--primary-green);
-    transition: background-color 0.2s, color 0.2s;
-    text-decoration: none;
-    display: inline-block;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    position: relative;
-    z-index: 10;
-    background: transparent;
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  color: var(--primary-green);
+  transition: background-color 0.2s, color 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  position: relative;
+  z-index: 10;
+  background: transparent;
 }
 
 .tab:hover {
-    background-color: #f3fcf6; /* light green-50 hover */
-    color: var(--primary-green);
+  background-color: #f3fcf6;
+  color: var(--primary-green);
 }
 
-/* Active Tab Styling (For non-register links) */
 .tab.active {
-    background: var(--white);
-    color: var(--primary-green);
-    border: 1px solid var(--accent-green); /* 1px solid #86efac */
-    border-bottom: none;
-    z-index: 20;
+  background: var(--white);
+  color: var(--primary-green);
+  border: 1px solid var(--accent-green);
+  border-bottom: none;
+  z-index: 20;
 }
 
-/* White band to cover the bottom border of the nav (Simulates the React span) */
 .tab.active::after {
-    content: '';
-    position: absolute;
-    left: -1px; /* Overlap border */
-    right: -1px; /* Overlap border */
-    bottom: -1px; /* Adjust to cover the border exactly */
-    height: 3px; 
-    background: var(--white);
-    z-index: 20;
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  height: 3px;
+  background: var(--white);
+  z-index: 20;
+  pointer-events: none;
 }
 
-/* Register Button (Always Green, overrides active/hover styles) */
 .tab.register-btn {
-    background-color: var(--primary-green);
-    color: var(--white);
-    border: none;
-    z-index: 10;
-    margin-left: 1rem; /* ml-4 */
+  background-color: var(--primary-green);
+  color: var(--white);
+  border: none;
+  z-index: 10;
+  margin-left: 1rem;
 }
 
 .tab.register-btn:hover {
-    background-color: #38a169; /* green-500 hover */
-    color: var(--white);
+  background-color: #38a169;
+  color: var(--white);
 }
 
 .tab.register-btn::after {
-    content: none; /* Ensure the white cover isn't applied to register */
+  content: none;
 }
 
-/* User Icon/Logo Styling (Logged In) */
 .user-icon {
-    font-size: 1.75rem; /* text-3xl */
-    color: var(--primary-green);
-    cursor: pointer;
-    margin-left: 1rem;
-    transition: color 0.2s;
-    /* Ensure icon sits on the baseline with the bottom of the tabs */
-    padding-bottom: 0.5rem;
+  font-size: 1.75rem;
+  color: var(--primary-green);
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: color 0.2s;
+  padding-bottom: 0.5rem;
 }
 
 .user-icon:hover {
-    color: #38a169; /* green-500 hover */
+  color: #38a169;
 }
 
 .user-logo {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--accent-green);
-    cursor: pointer;
-    margin-left: 1rem;
-    padding-bottom: 0.5rem; /* Ensure logo sits on the baseline */
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--accent-green);
+  cursor: pointer;
+  margin-left: 1rem;
+  padding-bottom: 0.5rem;
 }
 
-/* -------------------------------------- */
-/* --- REST OF STYLES (NO CHANGE) --- */
-/* -------------------------------------- */
-
-/* --- Sections Generic --- */
 section {
-    padding: 3rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h2 {
-    font-size: 2rem;
-    color: var(--primary-green);
-    margin-bottom: 2rem;
-    text-align: center;
+  font-size: 2rem;
+  color: var(--primary-green);
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-/* --- Buttons --- */
 .btn {
-    display: inline-block;
-    padding: 0.75rem 2rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    border: none;
-    font-size: 1rem;
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  font-size: 1rem;
 }
 
 .btn-primary {
-    background-color: var(--primary-green);
-    color: var(--white);
-    box-shadow: var(--shadow);
+  background-color: var(--primary-green);
+  color: var(--white);
+  box-shadow: var(--shadow);
 }
 
 .btn-primary:hover {
-    background-color: var(--dark-green);
+  background-color: var(--dark-green);
 }
 
 .btn-outline {
-    background-color: var(--white);
-    color: var(--primary-green);
-    border: 2px solid var(--primary-green);
+  background-color: var(--white);
+  color: var(--primary-green);
+  border: 2px solid var(--primary-green);
 }
 
 .btn-outline:hover {
-    background-color: var(--light-green);
+  background-color: var(--light-green);
 }
 
 .full-width {
-    width: 100%;
+  width: 100%;
 }
 
-/* --- Hero Section --- */
 .hero-section {
-    padding: 2.5rem 1rem;
+  padding: 2.5rem 1rem;
 }
 
 .hero-card {
-    background: var(--white);
-    max-width: 1150px;
-    width: 100%;
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    flex-direction: column;
+  background: var(--white);
+  max-width: 1150px;
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
 }
 
 .hero-image {
-    width: 100%;
-    height: 300px;
+  width: 100%;
+  height: 300px;
 }
 
 .hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hero-content {
-    padding: 2rem;
-    text-align: center;
-    background: linear-gradient(to bottom right, #bbf7d0, #dcfce7); /* gradient green-200 to green-100 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(to bottom right, #bbf7d0, #dcfce7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .hero-content h1 {
-    color: var(--dark-green);
-    font-size: 1.875rem;
-    margin-bottom: 1rem;
+  color: var(--dark-green);
+  font-size: 1.875rem;
+  margin-bottom: 1rem;
 }
 
 .hero-content p {
-    color: var(--primary-green);
-    margin-bottom: 2rem;
-    font-size: 1.125rem;
+  color: var(--primary-green);
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
 }
 
-/* Desktop Hero Styles */
 @media (min-width: 768px) {
-    .hero-card {
-        flex-direction: row;
-    }
-    .hero-image, .hero-content {
-        width: 50%;
-    }
-    .hero-image {
-        height: auto;
-    }
-    .hero-content {
-        padding: 3rem;
-    }
-    .hero-content h1 {
-        font-size: 2.25rem;
-    }
+  .hero-card {
+    flex-direction: row;
+  }
+  .hero-image,
+  .hero-content {
+    width: 50%;
+  }
+  .hero-image {
+    height: auto;
+  }
+  .hero-content {
+    padding: 3rem;
+  }
+  .hero-content h1 {
+    font-size: 2.25rem;
+  }
 }
 
-/* --- Grid Layouts (Used for NGOs, Why Donate, Testimonials) --- */
 .grid-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    width: 100%;
-    max-width: 1150px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1150px;
 }
 
 @media (min-width: 768px) {
-    .grid-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* --- Featured NGOs --- */
 .featured-section {
-    background-color: var(--light-green);
+  background-color: var(--light-green);
 }
 
 .card {
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1px solid var(--accent-green);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s, box-shadow 0.2s;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--accent-green);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .card-image-wrapper {
-    position: relative;
-    height: 200px;
+  position: relative;
+  height: 200px;
 }
 
 .card-main-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .ngo-logo {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: white;
-    padding: 2px;
-    object-fit: contain;
-    border: 1px solid var(--accent-green);
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  padding: 2px;
+  object-fit: contain;
+  border: 1px solid var(--accent-green);
 }
 
 .card-body {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    text-align: center;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: center;
 }
 
 .card-body h3 {
-    color: var(--primary-green);
-    margin-bottom: 0.5rem;
+  color: var(--primary-green);
+  margin-bottom: 0.5rem;
 }
 
 .card-body p {
-    margin-bottom: 1.5rem;
-    color: var(--gray-text);
+  margin-bottom: 1.5rem;
+  color: var(--gray-text);
 }
 
 .card-body button {
-    margin-top: auto;
+  margin-top: auto;
 }
 
-/* --- Why Donate Section --- */
 .why-donate-section {
-    background-color: var(--white);
+  background-color: var(--white);
 }
 
 .feature-box {
-    background-color: var(--light-green);
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    text-align: center;
+  background-color: var(--light-green);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-align: center;
 }
 
 .feature-box .icon {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 1rem;
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 1rem;
 }
 
 .feature-box h3 {
-    color: var(--dark-green);
-    margin-bottom: 0.5rem;
+  color: var(--dark-green);
+  margin-bottom: 0.5rem;
 }
 
 .feature-box p {
-    color: var(--primary-green);
+  color: var(--primary-green);
 }
 
-/* --- Testimonials --- */
 .testimonials-section {
-    background-color: var(--light-green);
+  background-color: var(--light-green);
 }
 
 .testimonial-card {
-    background: var(--white);
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    box-shadow: var(--shadow);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .testimonial-card p {
-    font-style: italic;
-    color: var(--dark-green);
-    margin-bottom: 1rem;
+  font-style: italic;
+  color: var(--dark-green);
+  margin-bottom: 1rem;
 }
 
 .testimonial-card .author {
-    font-weight: bold;
-    color: var(--primary-green);
+  font-weight: bold;
+  color: var(--primary-green);
 }
 
 .testimonial-card .role {
-    font-size: 0.875rem;
-    color: #16a34a; /* Slightly lighter green */
+  font-size: 0.875rem;
+  color: #16a34a;
 }
 
-/* --- CTA Section --- */
 .cta-section {
-    background-color: var(--white);
-    text-align: center;
+  background-color: var(--white);
+  text-align: center;
 }
 
 .cta-section p {
-    max-width: 600px;
-    margin-bottom: 2rem;
-    font-size: 1.125rem;
-    color: var(--dark-green);
+  max-width: 600px;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+  color: var(--dark-green);
 }
 
 .cta-buttons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-/* --- Campaigns Section --- */
 .campaigns-section {
-    background-color: #f9fafb; /* gray-50 */
+  background-color: #f9fafb;
 }
 
 .campaign-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1px solid var(--accent-green);
-    box-shadow: var(--shadow);
-    max-width: 900px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--accent-green);
+  box-shadow: var(--shadow);
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .campaign-card img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
 }
 
 .campaign-content {
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .campaign-content h3 {
-    font-size: 1.5rem;
-    color: var(--primary-green);
-    margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
 }
 
 .campaign-meta {
-    font-size: 1.125rem;
-    color: var(--gray-text);
-    margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  color: var(--gray-text);
+  margin-bottom: 1.5rem;
 }
 
 @media (min-width: 768px) {
-    .campaign-card {
-        flex-direction: row;
-    }
-    .campaign-card img {
-        width: 50%;
-        height: auto;
-    }
-    .campaign-content {
-        width: 50%;
-        align-items: flex-start;
-        text-align: left;
-    }
+  .campaign-card {
+    flex-direction: row;
+  }
+  .campaign-card img {
+    width: 50%;
+    height: auto;
+  }
+  .campaign-content {
+    width: 50%;
+    align-items: flex-start;
+    text-align: left;
+  }
 }
 
-/* --- Footer --- */
 footer {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
-    text-align: center;
-    color: var(--primary-green);
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  text-align: center;
+  color: var(--primary-green);
 }
 
 .footer-logos {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
 }
 
 .logo-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .logo-group img {
-    height: 40px;
-    width: auto;
+  height: 40px;
+  width: auto;
 }
 
 .logo-group span {
-    font-size: 0.75rem;
-    font-weight: bold;
+  font-size: 0.75rem;
+  font-weight: bold;
 }
 
 .footer-links a {
-    font-weight: 600;
-    text-decoration: underline;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
 .copyright {
-    margin-top: 1rem;
-    font-size: 0.875rem;
+  margin-top: 1rem;
+  font-size: 0.875rem;
 }
