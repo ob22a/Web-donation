@@ -3,17 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - NGO/Donor Platform</title>
+    <title>NGO Registration</title>
+    <link rel="stylesheet" href="./style/base.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style/login-style.css" />
+    <link rel="stylesheet" href="./style/responsive.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="login-style.css" />
   </head>
   <body>
-    <div
-      class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white"
-    >
+    <header class="main-header">
+      <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
+      <button
+        class="nav-toggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+      <nav class="primary-nav">
+        <a href="/">Home</a>
+        <a href="/NGOs.html">NGOs</a>
+        <a href="/about.html">About</a>
+        <a href="/login.html">Login</a>
+        <a href="/register.html">Register</a>
+      </nav>
+    </header>
+    <div class="page-center">
       <div class="login-form-container">
         <h2 class="form-title">Login</h2>
 
@@ -95,5 +113,18 @@
         </form>
       </div>
     </div>
+    <script>
+      (function () {
+        const header = document.querySelector(".main-header");
+        const toggle = document.querySelector(".nav-toggle");
+
+        if (!header || !toggle) return;
+
+        toggle.addEventListener("click", function () {
+          const isOpen = header.classList.toggle("nav-open");
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      })();
+    </script>
   </body>
 </html>

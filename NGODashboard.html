@@ -3,11 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NGO Dashboard | Profile Management</title>
-    <link rel="stylesheet" href="ngoDashboardStyles.css" />
+    <title>NGO Registration</title>
+    <link rel="stylesheet" href="./style/base.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style/ngoDashboardStyles.css" />
+    <link rel="stylesheet" href="./style/responsive.css" />
   </head>
   <body>
     <div class="ngo-dashboard-container">
+      <header class="main-header">
+        <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
+        <button
+          class="nav-toggle"
+          aria-label="Toggle navigation"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <nav class="primary-nav">
+          <a href="/">Home</a>
+          <a href="/NGOs.html">NGOs</a>
+          <a href="/about.html">About</a>
+          <a href="/login.html">Login</a>
+          <a href="/register.html">Register</a>
+        </nav>
+      </header>
       <form class="ngo-dashboard-card" action="NDashboard.html" method="get">
         <h2 class="dashboard-title">NGO Dashboard</h2>
 
@@ -49,5 +69,18 @@ Our foundation started in 2005 with a small team focused on local conservation. 
         <button type="submit" class="primary-button">Update Profile</button>
       </form>
     </div>
+    <script>
+      (function () {
+        const header = document.querySelector(".main-header");
+        const toggle = document.querySelector(".nav-toggle");
+
+        if (!header || !toggle) return;
+
+        toggle.addEventListener("click", function () {
+          const isOpen = header.classList.toggle("nav-open");
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      })();
+    </script>
   </body>
 </html>

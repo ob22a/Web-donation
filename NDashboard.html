@@ -3,10 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NGO Dashboard (Static View with Hardcoded Data)</title>
-    <link rel="stylesheet" href="NDashboardStyle.css" />
+    <title>NGO Registration</title>
+    <link rel="stylesheet" href="./style/base.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style/NDashboardStyle.css" />
+    <link rel="stylesheet" href="./style/responsive.css" />
   </head>
   <body>
+    <header class="main-header">
+      <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
+      <button
+        class="nav-toggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+      <nav class="primary-nav">
+        <a href="/">Home</a>
+        <a href="/NGOs.html">NGOs</a>
+        <a href="/about.html">About</a>
+        <a href="/login.html">Login</a>
+        <a href="/register.html">Register</a>
+      </nav>
+    </header>
     <div class="dashboard-container">
       <!-- Dashboard Header -->
       <h3 class="header-text">NGO Dashboard</h3>
@@ -146,5 +166,18 @@
         </div>
       </div>
     </div>
+    <script>
+      (function () {
+        const header = document.querySelector(".main-header");
+        const toggle = document.querySelector(".nav-toggle");
+
+        if (!header || !toggle) return;
+
+        toggle.addEventListener("click", function () {
+          const isOpen = header.classList.toggle("nav-open");
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      })();
+    </script>
   </body>
 </html>

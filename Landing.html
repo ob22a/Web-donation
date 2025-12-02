@@ -3,33 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ethiopian NGO Digital Donations</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+    <title>NGO Registration</title>
+    <link rel="stylesheet" href="./style/base.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style/landing.css" />
+    <link rel="stylesheet" href="./style/responsive.css" />
   </head>
   <body>
-    <div class="main-wrapper">
-      <nav class="navbar complex-navbar">
-        <a href="/" class="nav-brand">Bright Ethiopia</a>
-
-        <div class="nav-links-wrapper">
-          <a href="/" class="tab active">Home</a>
-          <a href="/ngos.html" class="tab">NGOs</a>
-          <a href="/about.html" class="tab">About</a>
-
-          <a href="/login.html" class="tab">Login</a>
-          <a href="/register.html" class="tab register-btn">Register</a>
-        </div>
+    <header class="main-header">
+      <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
+      <button
+        class="nav-toggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+      <nav class="primary-nav">
+        <a href="/">Home</a>
+        <a href="/NGOs.html">NGOs</a>
+        <a href="/about.html">About</a>
+        <a href="/login.html">Login</a>
+        <a href="/register.html">Register</a>
       </nav>
+    </header>
+    <div class="main-wrapper">
       <main>
         <section class="hero-section">
           <div class="hero-card">
             <div class="hero-image">
               <img
-                src="./hero-image.jpg"
+                src="./assets/images/hero-image.jpg"
                 alt="Ethiopian NGO Hero"
                 onerror="this.src='https://placehold.co/600x400?text=Hero+Image'"
               />
@@ -54,13 +58,13 @@
             <div class="card ngo-card">
               <div class="card-image-wrapper">
                 <img
-                  src="./mekedonia-logo.jpg"
+                  src="./assets/images/mekedonia-logo.jpg"
                   class="ngo-logo"
                   alt="Logo"
                   onerror="this.style.display='none'"
                 />
                 <img
-                  src="./hero-image.jpg"
+                  src="./assets/images/hero-image.jpg"
                   class="card-main-image"
                   alt="Macedonia"
                   onerror="this.src='https://placehold.co/400x300'"
@@ -78,13 +82,13 @@
             <div class="card ngo-card">
               <div class="card-image-wrapper">
                 <img
-                  src="./wise-logo.jpg"
+                  src="./assets/images/wise-logo.jpg"
                   class="ngo-logo"
                   alt="Logo"
                   onerror="this.style.display='none'"
                 />
                 <img
-                  src="./wise-image.jpg"
+                  src="./assets/images/wise-image.jpg"
                   class="card-main-image"
                   alt="WISE"
                   onerror="this.src='https://placehold.co/400x300'"
@@ -103,13 +107,13 @@
             <div class="card ngo-card">
               <div class="card-image-wrapper">
                 <img
-                  src="./hope-logo.png"
+                  src="./assets/images/hope-logo.png"
                   class="ngo-logo"
                   alt="Logo"
                   onerror="this.style.display='none'"
                 />
                 <img
-                  src="./hope-image.jpg"
+                  src="./assets/images/hope-image.jpg"
                   class="card-main-image"
                   alt="Hope"
                   onerror="this.src='https://placehold.co/400x300'"
@@ -205,7 +209,7 @@
           <h2>Active Campaigns</h2>
           <div class="campaign-card">
             <img
-              src="./default-campaign.jpg"
+              src="./assets/images/default-campaign.jpg"
               alt="Campaign"
               onerror="this.src='https://placehold.co/600x400'"
             />
@@ -230,7 +234,7 @@
           <div class="footer-logos">
             <div class="logo-group">
               <img
-                src="./cbe-logo.png"
+                src="./assets/images/cbe-logo.png"
                 alt="CBE"
                 onerror="this.src='https://placehold.co/50'"
               />
@@ -238,7 +242,7 @@
             </div>
             <div class="logo-group">
               <img
-                src="./telebirr-logo.png"
+                src="./assets/images/telebirr-logo.png"
                 alt="Telebirr"
                 onerror="this.src='https://placehold.co/50'"
               />
@@ -249,11 +253,23 @@
             <a href="contact.html">Contact Info</a>
           </div>
           <div class="copyright">
-            &copy; 2024 Ethiopian NGO Digital Donations.<br />
-            Powered by Cyber Talent Ethiopia
+            &copy; 2025 Ethiopian NGO Digital Donations.<br />
           </div>
         </footer>
       </main>
     </div>
+    <script>
+      (function () {
+        const header = document.querySelector(".main-header");
+        const toggle = document.querySelector(".nav-toggle");
+
+        if (!header || !toggle) return;
+
+        toggle.addEventListener("click", function () {
+          const isOpen = header.classList.toggle("nav-open");
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      })();
+    </script>
   </body>
 </html>
