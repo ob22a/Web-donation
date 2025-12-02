@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGOs – Ethiopian NGO Digital Donations</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            ☰
+        </button>
+        <nav class="primary-nav">
+            <a href="/">Home</a>
+            <a href="/NGOs.html">NGOs</a>
+            <a href="/about.html">About</a>
+            <a href="/login.html">Login</a>
+            <a href="/register.html">Register</a>
+        </nav>
+    </header>
+
+    <main class="page-content">
+        <section class="ngos-hero">
+            <h1 class="ngos-title">Available NGOs for Donation</h1>
+        </section>
+
+        <section class="ngos-section">
+            <div class="ngos-grid">
+                <article class="ngo-card">
+                    <img
+                        class="ngo-card-image"
+                        src="https://example.com/macedonia.jpg"
+                        alt="Macedonia Humanitarian Association"
+                    />
+                    <div class="ngo-card-body">
+                        <h2 class="ngo-card-title">Macedonia Humanitarian Association</h2>
+                        <p class="ngo-card-description">
+                            Supporting homeless and vulnerable communities in Addis Ababa.
+                        </p>
+                        <button class="primary-button ngo-card-button">
+                            Donate
+                        </button>
+                    </div>
+                </article>
+
+                <article class="ngo-card">
+                    <img
+                        class="ngo-card-image"
+                        src="https://example.com/wise.jpg"
+                        alt="Organization for Women in Self Employment (WISE)"
+                    />
+                    <div class="ngo-card-body">
+                        <h2 class="ngo-card-title">
+                            Organization for Women in Self Employment (WISE)
+                        </h2>
+                        <p class="ngo-card-description">
+                            Empowering women through training and microfinance initiatives.
+                        </p>
+                        <button class="primary-button ngo-card-button">
+                            Donate
+                        </button>
+                    </div>
+                </article>
+
+                <article class="ngo-card">
+                    <img
+                        class="ngo-card-image"
+                        src="https://example.com/hope.jpg"
+                        alt="Hope for Children Organization"
+                    />
+                    <div class="ngo-card-body">
+                        <h2 class="ngo-card-title">Hope for Children Organization</h2>
+                        <p class="ngo-card-description">
+                            Improving child welfare through education and health programs.
+                        </p>
+                        <button class="primary-button ngo-card-button">
+                            Donate
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Reuse the same mobile navigation toggle as in NGORegister.html
+        (function () {
+            const header = document.querySelector('.main-header');
+            const toggle = document.querySelector('.nav-toggle');
+
+            if (!header || !toggle) return;
+
+            toggle.addEventListener('click', function () {
+                const isOpen = header.classList.toggle('nav-open');
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        })();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
