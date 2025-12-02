@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NGO Dashboard (Static View with Hardcoded Data)</title>
+    <link rel="stylesheet" href="NDashboardStyle.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Dashboard Header -->
+      <h3 class="header-text">NGO Dashboard</h3>
+
+      <!-- Statistics Section (Hardcoded Data) -->
+      <div id="statistics-section" class="section-card">
+        <h4 class="section-title">Statistics</h4>
+        <div id="stats-content">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value">15,520</div>
+              <div class="stat-label">Total Donations (ETB)</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">78</div>
+              <div class="stat-label">Donors</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">4</div>
+              <div class="stat-label">Campaigns</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">198.97</div>
+              <div class="stat-label">Avg. Donation (ETB)</div>
+            </div>
+          </div>
+          <div class="mt-6 text-center">
+            <div style="font-weight: 600">Top Campaign:</div>
+            <div>School Supplies Drive (8,200 ETB)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaigns Section (Static) -->
+      <div id="campaigns-section" class="section-card">
+        <div
+          class="flex-row"
+          style="
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+          "
+        >
+          <h4 class="section-title" style="margin-bottom: 0">
+            Your Campaigns (Simulated)
+          </h4>
+          <button
+            id="create-campaign-btn"
+            class="btn btn-primary"
+            title="Requires JavaScript to be functional"
+          >
+            + Create New Campaign
+          </button>
+        </div>
+
+        <div class="campaigns-list">
+          <div class="campaign-placeholder">
+            Campaigns List Placeholder: Showing two example campaign links
+            below.
+          </div>
+          <div class="campaign-actions">
+            <button
+              class="btn btn-primary"
+              title="Requires JavaScript to be functional"
+            >
+              Edit Camp. 1
+            </button>
+            <button
+              class="btn btn-primary"
+              title="Requires JavaScript to be functional"
+            >
+              Edit Camp. 2
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donations Section (Hardcoded Data - First 5 entries) -->
+      <div id="donations-section" class="section-card">
+        <h4 class="section-title">All Donations</h4>
+        <div id="donations-content">
+          <div class="table-wrapper">
+            <table class="donation-table">
+              <thead>
+                <tr>
+                  <th>Donor</th>
+                  <th>Amount (ETB)</th>
+                  <th>Campaign</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Abebe Kebede</td>
+                  <td>500</td>
+                  <td>Water Well Project</td>
+                  <td>10/25/2024</td>
+                </tr>
+                <tr>
+                  <td>Jane Doe</td>
+                  <td>1,000</td>
+                  <td>School Supplies Drive</td>
+                  <td>10/24/2024</td>
+                </tr>
+                <tr>
+                  <td>Anonymous</td>
+                  <td>50</td>
+                  <td>Water Well Project</td>
+                  <td>10/23/2024</td>
+                </tr>
+                <tr>
+                  <td>Kidus W.</td>
+                  <td>200</td>
+                  <td>Healthcare Kits</td>
+                  <td>10/22/2024</td>
+                </tr>
+                <tr>
+                  <td>Sara A.</td>
+                  <td>50</td>
+                  <td>School Supplies Drive</td>
+                  <td>10/21/2024</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Footer with non-functional buttons -->
+          <div class="mt-6 text-center">
+            <button
+              id="toggle-donations-btn"
+              class="link-button"
+              title="Requires JavaScript to be functional"
+            >
+              Show all 7 donations
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

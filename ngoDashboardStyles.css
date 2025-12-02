@@ -1,0 +1,147 @@
+/*
+|--------------------------------------------------------------------------
+| NGO DASHBOARD STYLES
+|--------------------------------------------------------------------------
+*/
+
+/* Define the base color variables to ensure the page looks correct */
+:root {
+  --dark-green: rgb(21, 128, 61);
+  --mid-green: rgb(22, 163, 74);
+  --regular-green: rgb(34, 197, 94);
+  --bg-color: rgb(209, 250, 229);
+  --label-color: #4a5568;
+  --text-color: #111827;
+  --error-color: #dc2626;
+  --white-green: rgb(240, 253, 244);
+}
+
+/* Global Reset/Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  min-height: 100vh;
+}
+
+/* Page Container (mimics .auth-section) */
+.ngo-dashboard-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Form Card (mimics .auth-card) */
+.ngo-dashboard-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 32rem; /* Slightly larger than the standard login card */
+  border: 1px solid var(--regular-green);
+}
+
+.dashboard-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: var(--dark-green);
+  text-align: center;
+}
+
+/* Form Group Layout */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--label-color);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* Input and Textarea Styling */
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: vertical; /* Allows resizing for textarea */
+  min-height: 40px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--regular-green);
+  box-shadow: 0 0 0 3px var(--white-green);
+}
+
+/* Button Styling (mimics .primary-button) */
+.primary-button {
+  width: 100%;
+  border-radius: 0.5rem;
+  background-color: var(--dark-green);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 300ms ease-out, transform 150ms ease-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.primary-button:hover {
+  background-color: var(--mid-green);
+  transform: translateY(-1px);
+}
+
+/* Message Box Styling */
+.message-box {
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.success-message {
+  background-color: var(--white-green);
+  color: var(--mid-green);
+  border: 1px solid var(--light-green);
+}
+
+.error-message {
+  background-color: #fee2e2; /* light red */
+  color: var(--error-color);
+  border: 1px solid #f87171; /* brighter red */
+}
+
+.hidden {
+  display: none;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 640px) {
+  .ngo-dashboard-card {
+    padding: 1.5rem;
+  }
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+}

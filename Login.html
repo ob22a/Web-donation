@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - NGO/Donor Platform</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="login-style.css" />
+  </head>
+  <body>
+    <div
+      class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white"
+    >
+      <div class="login-form-container">
+        <h2 class="form-title">Login</h2>
+
+        <!-- Error message placeholder -->
+        <div class="error-message">
+          <!-- Error text will appear here -->
+        </div>
+
+        <form action="dashboard.html" method="get">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div class="form-group password-group">
+            <label for="password">Password</label>
+            <div class="relative-group">
+              <input
+                type="password"
+                id="password"
+                class="form-input pr-10"
+                placeholder="••••••••"
+                required
+              />
+              <!-- Password toggle button (requires JS to function) -->
+              <button
+                type="button"
+                class="password-toggle-btn"
+                title="Password visibility toggle"
+              >
+                <div class="relative">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="password-icon"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm7 0c0 5-4 9-10 9S2 17 2 12s4-9 10-9 10 4 10 9z"
+                    />
+                  </svg>
+                  <!-- Slash line (Static - assumed hidden state) -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="password-slash hidden"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3l18 18"
+                    />
+                  </svg>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn">Login</button>
+
+          <!-- Default CTA for Registration (Simulated emailNotFound=false state) -->
+          <div class="cta-container mt-4 mb-2">
+            <span class="cta-text"> Create new account? </span>
+            <a href="register.html" class="register-btn">Register</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

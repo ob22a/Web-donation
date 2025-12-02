@@ -1,0 +1,195 @@
+/* Variables based on Tailwind colors */
+:root {
+  --green-700: #047857;
+  --green-500: #10b981;
+  --green-100: #d1fae5;
+  --white: #ffffff;
+  --gray-300: #d1d5db;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --red-600: #dc2626;
+}
+
+/* Global/Body Styles (min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white) */
+body,
+html {
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom right, var(--green-100), var(--white));
+}
+
+/* Outer wrapper for centering (not strictly necessary since body is handling it, but good practice) */
+.min-h-screen {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Form Container (bg-white p-8 rounded-lg shadow-md w-full max-w-md) */
+.login-form-container {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 28rem; /* max-w-md */
+}
+
+/* Title (text-2xl font-bold mb-6 text-green-700 text-center) */
+.form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--green-700);
+  text-align: center;
+}
+
+/* Error Message (mb-4 text-red-600 text-center) */
+.error-message {
+  margin-bottom: 1rem;
+  color: var(--red-600);
+  text-align: center;
+}
+
+/* Form Groups (mb-4, mb-6) */
+.form-group {
+  margin-bottom: 1rem;
+}
+.password-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  /* block mb-2 text-gray-700 */
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--gray-700);
+}
+
+/* Input Fields */
+.form-input {
+  /* w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 */
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Password Visibility Toggle */
+.relative-group {
+  position: relative;
+}
+
+.form-input.pr-10 {
+  padding-right: 2.5rem; /* space for the icon */
+}
+
+.password-toggle-btn {
+  /* absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 focus:outline-none */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gray-600);
+  outline: none;
+}
+
+.password-toggle-btn:hover {
+  color: var(--gray-800);
+}
+
+.password-icon {
+  /* h-5 w-5 */
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.password-slash {
+  /* absolute inset-0 h-5 w-5 text-gray-600 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+  color: var(--gray-600);
+  stroke-width: 2px;
+}
+
+.password-slash.hidden {
+  display: none;
+}
+
+/* Buttons (submit and register) */
+.submit-btn,
+.register-btn {
+  /* w-full bg-green-700 text-white py-2 rounded-lg font-semibold hover:bg-green-500 transition */
+  background-color: var(--green-700);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn {
+  width: 100%;
+}
+
+.submit-btn:hover,
+.register-btn:hover {
+  background-color: var(--green-500);
+}
+
+/* CTA Container and Register Button */
+.cta-container {
+  /* flex items-center justify-center */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-container.mt-4 {
+  margin-top: 1rem;
+}
+.cta-container.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.cta-text {
+  /* mr-2 text-green-700 font-medium */
+  margin-right: 0.5rem;
+  color: var(--green-700);
+  font-weight: 500;
+}
+
+.register-btn {
+  /* py-2 px-6 */
+  width: auto;
+  padding: 0.5rem 1.5rem;
+}

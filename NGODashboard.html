@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NGO Dashboard | Profile Management</title>
+    <link rel="stylesheet" href="ngoDashboardStyles.css" />
+  </head>
+  <body>
+    <div class="ngo-dashboard-container">
+      <form class="ngo-dashboard-card" action="NDashboard.html" method="get">
+        <h2 class="dashboard-title">NGO Dashboard</h2>
+
+        <div class="form-group">
+          <label for="ngoName">NGO Name</label>
+          <input
+            type="text"
+            id="ngoName"
+            name="ngoName"
+            placeholder="Enter the official NGO name"
+            required
+            value="Example Charity Foundation"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input
+            type="text"
+            id="description"
+            name="description"
+            placeholder="A brief, one-line mission statement"
+            value="Protecting wildlife and restoring forests."
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="story">Story</label>
+          <textarea
+            id="story"
+            name="story"
+            rows="5"
+            placeholder="Tell your organization's full story here. This will appear on your public profile."
+          >
+Our foundation started in 2005 with a small team focused on local conservation. Over the years, our mission has grown to encompass large-scale reforestation efforts across the region, driven by community involvement and sustainable practices.</textarea
+          >
+        </div>
+
+        <button type="submit" class="primary-button">Update Profile</button>
+      </form>
+    </div>
+  </body>
+</html>
