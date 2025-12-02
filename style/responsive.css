@@ -1,0 +1,67 @@
+@media (max-width: 768px) {
+    .main-header {
+      padding: 0.75rem 1rem;
+      flex-wrap: wrap;
+    }
+  
+    .brand-title {
+      font-size: 1.05rem;
+    }
+  
+    .nav-toggle {
+      display: block;
+    }
+  
+    .primary-nav {
+      width: 100%;
+      margin-top: 0.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+      display: none;
+    }
+  
+    .primary-nav a {
+      width: 100%;
+      padding-inline: 0.75rem;
+    }
+  
+    .main-header.nav-open .primary-nav {
+      display: flex;
+    }
+  
+    .page-content {
+      padding: 0.75rem;
+    }
+  
+    .auth-card {
+      padding: 1.5rem;
+    }
+  
+    .auth-title {
+      font-size: 1.35rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .brand-title {
+      font-size: 0.95rem;
+    }
+  
+    .primary-nav a {
+      font-size: 0.9rem;
+    }
+  
+    .auth-title {
+      font-size: 1.25rem;
+    }
+  
+    .ngos-title {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .ngos-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }

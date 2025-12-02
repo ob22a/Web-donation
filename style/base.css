@@ -1,0 +1,63 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root{
+  --dark-green: rgb(21,128,61);   
+  --mid-green:  rgb(22,163,74);   
+  --regular-green: rgb(34,197,94);
+  --light-green: rgb(134,239,172);
+  --white-green: rgb(240,253,244);
+  --bg-color: rgb(209, 250, 229);
+  --label-color: #4a5568;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body{
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #111827;
+  background-color: #ffffff;
+}
+
+a{
+  text-decoration: none;
+}
+
+button{
+  cursor: pointer;
+  font-family: inherit;
+}
+
+h1,h2,h3,h4,h5,h6{
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.primary-button{
+  margin-bottom: 1rem; 
+  width: 100%; 
+  border-radius: 0.5rem; 
+  background-color: var(--dark-green); 
+  padding-top: 0.5rem;  
+  padding-bottom: 0.5rem; 
+  font-weight: 600; 
+  color: #ffffff; 
+  border: none;
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.primary-button:hover{
+  background-color: var(--mid-green);
+  transform: translateY(-1px);
+}
+
+.page-content {
+  padding: 1rem;
+  min-height: 100vh;
+  background-image: linear-gradient(to bottom right,var(--bg-color) , #FFFFFF);
+}
