@@ -1,8 +1,6 @@
 body.page-register {
-  background: var(--light-green);
   min-height: 100vh;
   box-sizing: border-box;
-  padding-top: calc(var(--header-height) + var(--header-gap));
   display: block;
 }
 
@@ -75,8 +73,4 @@ body.page-register {
 
 .link-button:hover {
   text-decoration: underline;
-}
-
-body.page-register {
-  background-color: var(--light-green);
 }

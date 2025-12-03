@@ -1,10 +1,63 @@
+@media (min-width: 768px) {
+  .profile-preferences-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-payment-form-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .profile-payment-form-submit {
+    grid-column: span 3;
+  }
+
+  .profile-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  .profile-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-email-panel {
+    grid-column: span 2;
+  }
+}
+
 @media (max-width: 768px) {
-    .main-header {
+    .main-header.logged-in {
+      padding: 0 1rem;
+    }
+
+    .main-header.logged-in .brand-title {
+      font-size: 1.05rem;
+    }
+
+    .main-header.logged-in .primary-nav.logged-in {
+      gap: 0.25rem;
+    }
+
+    .main-header.logged-in .primary-nav.logged-in a.tab {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .main-header.logged-in .user-icon {
+      font-size: 1.5rem;
+      margin-left: 0.5rem;
+    }
+
+    .main-header.logged-in .user-icon svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    
+    .main-header:not(.logged-in) {
       padding: 0.75rem 1rem;
       flex-wrap: wrap;
     }
   
-    .brand-title {
+    .main-header:not(.logged-in) .brand-title {
       font-size: 1.05rem;
     }
   
@@ -12,7 +65,7 @@
       display: block;
     }
   
-    .primary-nav {
+    .primary-nav:not(.logged-in) {
       width: 100%;
       margin-top: 0.5rem;
       flex-direction: column;
@@ -20,12 +73,12 @@
       display: none;
     }
   
-    .primary-nav a {
+    .primary-nav:not(.logged-in) a {
       width: 100%;
       padding-inline: 0.75rem;
     }
   
-    .main-header.nav-open .primary-nav {
+    .main-header.nav-open .primary-nav:not(.logged-in) {
       display: flex;
     }
   
