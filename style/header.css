@@ -18,8 +18,9 @@
   color: var(--dark-green);
 }
 
-.primary-nav {
+.primary-nav,.primary-nav.logged-in {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.5rem;
 }
@@ -44,4 +45,8 @@
   font-size: 1.5rem;
   color: var(--dark-green);
   padding: 0.25rem 0.5rem;
+}
+
+.main-header + .page-content {
+  margin-top: 4.5rem;
 }
