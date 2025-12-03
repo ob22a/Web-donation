@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="./style/NDashboardStyle.css" />
     <link rel="stylesheet" href="./style/responsive.css" />
   </head>
-  <body>
+  <body class="page-dashboard">
     <header class="main-header">
-      <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
+      <a href="/" class="brand-title">Bright Et</a>
       <button
         class="nav-toggle"
         aria-label="Toggle navigation"
@@ -21,17 +21,15 @@
       </button>
       <nav class="primary-nav">
         <a href="/">Home</a>
-        <a href="/NGOs.html">NGOs</a>
-        <a href="/about.html">About</a>
-        <a href="/login.html">Login</a>
-        <a href="/register.html">Register</a>
+        <a href="NGOs.html">NGOs</a>
+        <a href="about.html">About</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
       </nav>
     </header>
     <div class="dashboard-container">
-      <!-- Dashboard Header -->
       <h3 class="header-text">NGO Dashboard</h3>
 
-      <!-- Statistics Section (Hardcoded Data) -->
       <div id="statistics-section" class="section-card">
         <h4 class="section-title">Statistics</h4>
         <div id="stats-content">
@@ -60,7 +58,6 @@
         </div>
       </div>
 
-      <!-- Campaigns Section (Static) -->
       <div id="campaigns-section" class="section-card">
         <div
           class="flex-row"
@@ -70,9 +67,7 @@
             margin-bottom: 1rem;
           "
         >
-          <h4 class="section-title" style="margin-bottom: 0">
-            Your Campaigns (Simulated)
-          </h4>
+          <h4 class="section-title" style="margin-bottom: 0">Your Campaigns</h4>
           <button
             id="create-campaign-btn"
             class="btn btn-primary"
@@ -83,28 +78,79 @@
         </div>
 
         <div class="campaigns-list">
-          <div class="campaign-placeholder">
-            Campaigns List Placeholder: Showing two example campaign links
-            below.
+          <div class="campaign-item">
+            <div class="campaign-info">
+              <h5>Clean Water for Rural School</h5>
+              <p>
+                Install a borehole and water tanks to provide clean drinking
+                water for the school and nearby community.
+              </p>
+              <div class="campaign-meta">
+                Raised: <strong>12,300 ETB</strong> of 20,000 ETB
+              </div>
+            </div>
+
+            <div class="campaign-side">
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" style="width: 61%"></div>
+              </div>
+              <div class="campaign-actions">
+                <button class="btn" aria-label="View campaign">View</button>
+                <button class="btn btn-primary" aria-label="Edit campaign">
+                  Edit
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="campaign-actions">
-            <button
-              class="btn btn-primary"
-              title="Requires JavaScript to be functional"
-            >
-              Edit Camp. 1
-            </button>
-            <button
-              class="btn btn-primary"
-              title="Requires JavaScript to be functional"
-            >
-              Edit Camp. 2
-            </button>
+
+          <div class="campaign-item">
+            <div class="campaign-info">
+              <h5>School Supplies Drive</h5>
+              <p>
+                Provide notebooks, pens and uniforms to underprivileged children
+                in Addis Ababa.
+              </p>
+              <div class="campaign-meta">
+                Raised: <strong>8,200 ETB</strong> of 8,200 ETB
+              </div>
+            </div>
+
+            <div class="campaign-side">
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" style="width: 100%"></div>
+              </div>
+              <div class="campaign-actions">
+                <button class="btn">View</button>
+                <button class="btn btn-primary">Edit</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="campaign-item">
+            <div class="campaign-info">
+              <h5>Healthcare Kits Distribution</h5>
+              <p>
+                Distribute basic healthcare kits and first-aid training to
+                remote communities.
+              </p>
+              <div class="campaign-meta">
+                Raised: <strong>3,500 ETB</strong> of 10,000 ETB
+              </div>
+            </div>
+
+            <div class="campaign-side">
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" style="width: 35%"></div>
+              </div>
+              <div class="campaign-actions">
+                <button class="btn">View</button>
+                <button class="btn btn-primary">Edit</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Donations Section (Hardcoded Data - First 5 entries) -->
       <div id="donations-section" class="section-card">
         <h4 class="section-title">All Donations</h4>
         <div id="donations-content">
@@ -153,11 +199,10 @@
             </table>
           </div>
 
-          <!-- Footer with non-functional buttons -->
           <div class="mt-6 text-center">
             <button
               id="toggle-donations-btn"
-              class="link-button"
+              class="show-donations-btn"
               title="Requires JavaScript to be functional"
             >
               Show all 7 donations

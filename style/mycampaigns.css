@@ -1,0 +1,381 @@
+body.page-my-campaigns {
+  background: linear-gradient(
+    to bottom right,
+    var(--light-green, #f0fdf4),
+    var(--white)
+  );
+  min-height: 100vh;
+  padding-top: calc(var(--header-height) + var(--header-gap));
+  box-sizing: border-box;
+}
+
+.page-my-campaigns .container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.page-my-campaigns .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.create-panel {
+  margin-left: auto;
+  position: relative;
+  display: inline-block;
+  width: auto;
+}
+
+.create-panel > summary.create-button {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--primary-green);
+  color: var(--white);
+  font-weight: 700;
+  border: none;
+  box-shadow: var(--shadow);
+}
+
+.create-panel > summary {
+  outline: none;
+}
+
+.create-panel[open] > summary.create-button {
+  background: var(--dark-green);
+}
+
+.create-panel .create-form {
+  margin-top: 0;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #eef2f0;
+  padding: 1rem;
+  border-radius: 0.6rem;
+  box-shadow: var(--shadow);
+  width: 360px;
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
+  z-index: 50;
+}
+
+@media (max-width: 520px) {
+  .create-panel .create-form {
+    position: static;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+}
+
+.page-my-campaigns .filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.page-my-campaigns .filter-button {
+  background: transparent;
+  border: 1px solid #e6f2ea;
+  color: var(--primary-green);
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.page-my-campaigns .filter-button.active {
+  background: var(--primary-green);
+  color: var(--white);
+  border-color: var(--primary-green);
+}
+
+.page-my-campaigns .campaign-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.page-my-campaigns .campaign-card {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #eef2f0;
+  border-radius: 0.6rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.page-my-campaigns .campaign-title {
+  color: var(--primary-green);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.page-my-campaigns .campaign-status {
+  font-size: 0.9rem;
+  color: #10b981;
+}
+.page-my-campaigns .campaign-status.completed {
+  color: #6b7280;
+  opacity: 0.85;
+}
+
+.page-my-campaigns .campaign-description {
+  color: var(--gray-text);
+  line-height: 1.45;
+}
+
+.page-my-campaigns .progress-bar-container {
+  background: #ecfdf5;
+  border-radius: 999px;
+  height: 12px;
+  overflow: hidden;
+}
+.page-my-campaigns .progress-bar {
+  height: 100%;
+  background: var(--primary-green);
+  border-radius: 999px;
+  transition: width 300ms ease;
+}
+
+.page-my-campaigns .donation-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.page-my-campaigns .view-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--primary-green);
+  background: transparent;
+  color: var(--primary-green);
+  font-weight: 700;
+  text-decoration: none;
+  width: fit-content;
+  margin-top: 0.5rem;
+}
+.page-my-campaigns .view-button:hover {
+  background: var(--primary-green);
+  color: var(--white);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 7, 18, 0.45);
+  z-index: 2000;
+  padding: 1.5rem;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--white);
+  width: 100%;
+  max-width: 560px;
+  border-radius: 0.6rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+}
+
+.create-form {
+  display: grid;
+  gap: 0.75rem;
+}
+.create-form label {
+  display: block;
+  font-weight: 600;
+  color: var(--primary-green);
+  font-size: 0.95rem;
+}
+.create-form input[type="text"],
+.create-form input[type="number"],
+.create-form textarea,
+.create-form select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e6eef0;
+  box-sizing: border-box;
+  font: inherit;
+  color: var(--gray-text);
+}
+.create-form textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+.modal-close-button,
+.modal-submit-button {
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+.modal-close-button {
+  background: transparent;
+  color: var(--primary-green);
+  border: 2px solid rgba(16, 185, 129, 0.12);
+}
+.modal-submit-button {
+  background: var(--primary-green);
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.create-panel {
+  margin-left: 1rem;
+  position: relative;
+  display: inline-block;
+  width: auto;
+}
+
+.create-panel > summary.create-button {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--primary-green);
+  color: var(--white);
+  font-weight: 700;
+  border: none;
+  box-shadow: var(--shadow);
+}
+
+.create-panel > summary {
+  outline: none;
+}
+
+.create-panel[open] > summary.create-button {
+  background: var(--dark-green);
+}
+
+.create-panel .create-form {
+  margin-top: 0;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #eef2f0;
+  padding: 1rem;
+  border-radius: 0.6rem;
+  box-shadow: var(--shadow);
+  width: 360px;
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
+  z-index: 50;
+}
+
+.create-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.create-panel .create-form {
+  display: none;
+}
+
+.create-toggle:checked ~ .create-panel .create-form {
+  display: block;
+}
+
+.create-panel {
+  position: relative;
+  display: inline-block;
+}
+
+label.create-button {
+  cursor: pointer;
+}
+
+.modal-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  background: transparent;
+  color: var(--primary-green);
+  border: 2px solid rgba(16, 185, 129, 0.12);
+}
+
+label.create-button,
+.create-panel > summary.create-button {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--primary-green);
+  color: var(--white);
+  font-weight: 700;
+  border: none;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+
+label.create-button:hover,
+.create-panel > summary.create-button:hover {
+  background: var(--dark-green);
+}
+
+.header label.create-button {
+  margin-left: auto;
+}
+
+@media (max-width: 520px) {
+  .create-panel .create-form {
+    position: static;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+}
+
+@media (max-width: 880px) {
+  .page-my-campaigns .campaign-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-my-campaigns .donation-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

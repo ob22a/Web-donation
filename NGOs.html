@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NGOs – Ethiopian NGO Digital Donations</title>
-    <link rel="stylesheet" href="./style/base.css">
-    <link rel="stylesheet" href="./style/header.css">
-    <link rel="stylesheet" href="./style/ngos-description.css">
-    <link rel="stylesheet" href="./style/responsive.css">
-</head>
-<body>
+    <link rel="stylesheet" href="./style/base.css" />
+    <link rel="stylesheet" href="./style/header.css" />
+    <link rel="stylesheet" href="./style/ngos-description.css" />
+    <link rel="stylesheet" href="./style/responsive.css" />
+  </head>
+  <body>
     <header class="main-header">
-        <a href="/" class="brand-title">Ethiopian NGO Digital Donations</a>
-        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-            ☰
-        </button>
-        <nav class="primary-nav">
-            <a href="/">Home</a>
-            <a href="/NGOs.html">NGOs</a>
-            <a href="/about.html">About</a>
-            <a href="/login.html">Login</a>
-            <a href="/register.html">Register</a>
-        </nav>
+      <a href="/" class="brand-title">Bright Et</a>
+      <button
+        class="nav-toggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+      <nav class="primary-nav">
+        <a href="/">Home</a>
+        <a href="NGOs.html">NGOs</a>
+        <a href="about.html">About</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+      </nav>
     </header>
 
     <main class="page-content">
-        <section class="ngos-hero">
-            <h1 class="ngos-title">Available NGOs for Donation</h1>
-        </section>
+      <section class="ngos-hero">
+        <h1 class="ngos-title">Available NGOs for Donation</h1>
+      </section>
 
         <section class="ngos-section">
             <div class="ngos-grid">
@@ -88,18 +92,18 @@
     </main>
 
     <script>
-        // Reuse the same mobile navigation toggle as in NGORegister.html
-        (function () {
-            const header = document.querySelector('.main-header');
-            const toggle = document.querySelector('.nav-toggle');
+      // Reuse the same mobile navigation toggle as in NGORegister.html
+      (function () {
+        const header = document.querySelector(".main-header");
+        const toggle = document.querySelector(".nav-toggle");
 
-            if (!header || !toggle) return;
+        if (!header || !toggle) return;
 
-            toggle.addEventListener('click', function () {
-                const isOpen = header.classList.toggle('nav-open');
-                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-            });
-        })();
+        toggle.addEventListener("click", function () {
+          const isOpen = header.classList.toggle("nav-open");
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      })();
     </script>
 </body>
 </html>
