@@ -98,24 +98,20 @@
   padding-top: calc(var(--header-height) + var(--header-gap));
 }
 
-/* Ensure nav keeps a white background when header gets .nav-open */
 .main-header .primary-nav {
   background: transparent;
   transition: background-color 180ms ease, box-shadow 180ms ease;
-  z-index: 50; /* keep above page content when expanded */
+  z-index: 50;
 }
 
-/* When toggle opens navigation, force white background + drop shadow */
 .main-header.nav-open .primary-nav {
   background: var(--white, #ffffff);
   box-shadow: 0 8px 24px rgba(3, 7, 18, 0.06);
-  position: absolute; /* let it float over content */
-  top: 100%;
+  position: absolute;
   left: 0;
   right: 0;
 }
 
-/* Keep links readable and spaced when nav is open */
 .main-header .primary-nav a {
   color: var(--primary-green);
   display: inline-block;
@@ -123,7 +119,6 @@
   text-decoration: none;
 }
 
-/* Mobile: show stacked white panel when open */
 @media (max-width: 880px) {
   .main-header .primary-nav {
     display: none;
@@ -134,16 +129,14 @@
   }
 }
 
-/* show hamburger on small screens and ensure nav sits above page content when open */
 @media (max-width: 880px) {
   .nav-toggle {
-    display: inline-flex; /* show the toggle button on mobile */
-    align-items: center;
+    display: inline-flex;
     justify-content: center;
   }
 
   .main-header .primary-nav {
-    display: none; /* hidden by default on small screens (kept for clarity) */
+    display: none;
   }
 
   .main-header.nav-open .primary-nav {
@@ -155,6 +148,6 @@
     background: var(--white, #ffffff);
     box-shadow: 0 8px 24px rgba(3, 7, 18, 0.06);
     padding: 0.5rem 0.75rem;
-    z-index: 1100; /* make sure nav floats above main content/header */
+    z-index: 1100;
   }
 }
