@@ -120,6 +120,9 @@
 }
 
 @media (max-width: 880px) {
+  .main-header.logged-in .primary-nav.logged-in {
+    display: flex !important;   
+  }
   .main-header .primary-nav {
     display: none;
   }
