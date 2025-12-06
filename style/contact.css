@@ -45,7 +45,7 @@ body {
     background: #e8fdf0;
 }
 .contact-section {
-    padding: 50px 20px;
+    padding: calc(var(--header-height) + var(--header-gap) + 2rem) 1rem 2rem;
     min-height: 60vh;
     text-align: center;
 }

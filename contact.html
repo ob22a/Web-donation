@@ -4,23 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Information</title>
-    <link rel="stylesheet" href="contact.css">
+    <link rel="stylesheet" href="style/base.css">
+    <link rel="stylesheet" href="style/header.css">
+    <link rel="stylesheet" href="style/contact.css">
+    <link rel="stylesheet" href="style/responsive.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a class="navbar-logo" href="/donation-frontend/">
-                Ethiopian NGO Digital Donations
-            </a>
-            <div class="navbar-links">
-                <a class="nav-link" href="/donation-frontend/">Home</a>
-                <a class="nav-link" href="/donation-frontend/ngos">NGOs</a>
-                <a class="nav-link" href="/donation-frontend/about">About</a>
-                <a class="nav-link" href="/donation-frontend/login">Login</a>
-                <a class="nav-link" href="/donation-frontend/register">Register</a>
-            </div>
-        </div>
-    </nav>
+    <header class="main-header">
+        <a href="/" class="brand-title">Bright Et</a>
+        <button
+          class="nav-toggle"
+          aria-label="Toggle navigation"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <nav class="primary-nav">
+          <a href="/">Home</a>
+          <a href="NGOs.html">NGOs</a>
+          <a href="about.html">About</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </nav>
+    </header>
+
     <section class="contact-section">
         <div class="contact-header">
             <h1 class="contact-title">Contact Information</h1>
@@ -47,5 +54,19 @@
             </div>
         </div>
     </section>
+
+    <script>
+        (function () {
+          const header = document.querySelector(".main-header");
+          const toggle = document.querySelector(".nav-toggle");
+  
+          if (!header || !toggle) return;
+  
+          toggle.addEventListener("click", function () {
+            const isOpen = header.classList.toggle("nav-open");
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          });
+        })();
+    </script>
 </body>
 </html>
