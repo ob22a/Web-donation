@@ -8,7 +8,7 @@ body {
 .dashboard {
   max-width: 900px;
   margin: 2rem auto;
-  padding: 1rem;
+  padding: calc(var(--header-height) + var(--header-gap)) 1rem 2rem;
 }
 
 .profile-card {
@@ -23,7 +23,7 @@ body {
 
 .circle {
   width: 60px;
-  height: 60px;
+  aspect-ratio: 1/1;
   border-radius: 50%;
   background: #b2f2bb;
   display: flex;
@@ -45,6 +45,7 @@ body {
 
 .section {
   margin-top: 2rem;
+  padding: 1rem;
 }
 
 .section h3 {
@@ -84,7 +85,7 @@ body {
 
 .form-row {
   display: grid;
-  grid-template-columns: auto 120px auto 120px auto 120px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1rem;
   align-items: center;
   margin-bottom: 1rem;

@@ -1,29 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Donor Dashboard</title>
-  <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="style/base.css">
+  <link rel="stylesheet" href="style/header.css">
+  <link rel="stylesheet" href="style/drawer.css">
+  <link rel="stylesheet" href="style/DonorDashboard.css">
+  <link rel="stylesheet" href="style/responsive.css">
 </head>
-<body>
-  <nav class="navbar">
-    <a class="nav-brand" href="/donation-frontend/">Bright Ethiopia</a>
-    <div class="nav-links">
-      <a class="nav-item" href="/donation-frontend/">Home</a>
-      <a class="nav-item" href="/donation-frontend/ngos">NGOs</a>
-      <a class="nav-item" href="/donation-frontend/about">About</a>
 
-      <svg class="profile-icon" viewBox="0 0 496 512">
-        <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/>
-      </svg>
-    </div>
-  </nav>
+<body>
+  <header class="main-header logged-in">
+    <a href="/" class="brand-title">Bright Et</a>
+    <nav class="primary-nav logged-in">
+      <a href="/" class="tab">Home</a>
+      <a href="/NGOs.html" class="tab">NGOs</a>
+      <a href="/about.html" class="tab">About</a>
+      <button type="button" class="profile-trigger user-icon" aria-label="Open profile menu" aria-expanded="false"
+        aria-controls="profile-drawer">
+        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 496 512" height="1em" width="1em"
+          xmlns="http://www.w3.org/2000/svg">
+          <title>Profile</title>
+          <path
+            d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z">
+          </path>
+        </svg>
+      </button>
+    </nav>
+  </header>
   <main class="dashboard">
     <section class="profile-card">
       <div class="circle">
-        <span>YT</span>
+        <span>LA</span>
       </div>
       <div>
         <h2>Welcome, Leoul Abel !</h2>
@@ -75,13 +86,17 @@
       <div class="card green-card">
         <div class="form-row">
           <label>Enable</label>
-          <select><option>Off</option></select>
+          <select>
+            <option>Off</option>
+          </select>
 
           <label>Amount (ETB)</label>
           <input type="text" placeholder="e.g., 200">
 
           <label>Frequency</label>
-          <select><option>Daily</option></select>
+          <select>
+            <option>Daily</option>
+          </select>
         </div>
         <button class="save-btn">Save Recurring</button>
       </div>
@@ -113,5 +128,65 @@
       </div>
     </section>
   </main>
+
+  <div class="drawer-overlay" data-drawer-overlay></div>
+    <aside class="profile-drawer" id="profile-drawer" aria-hidden="true">
+      <button class="drawer-close" type="button" aria-label="Close menu">
+        ✕
+      </button>
+      <div class="drawer-content">
+        <div class="drawer-profile-card">
+          <div class="drawer-avatar">LA</div>
+          <h3>Leoul Abel</h3>
+          <p>LeoulAbel@gmail.com</p>
+          <button type="button" class="drawer-link">View profile</button>
+        </div>
+        <div class="drawer-links">
+          <a href="/dashboard.html">Dashboard</a>
+          <a href="/profile.html">Edit Profile</a>
+          <a href="/settings.html">Settings</a>
+          <a href="/my-donations.html">My Donations</a>
+          <a href="/notifications.html">Notifications</a>
+          <button type="button">Theme 🌞/🌙</button>
+          <button type="button">Language: EN | አማ | ORO</button>
+          <a href="/help.html">Need help?</a>
+          <button type="button">Logout</button>
+        </div>
+      </div>
+    </aside>
+
+  <script>
+    (function () {
+      const profileTrigger = document.querySelector(".profile-trigger");
+      const drawer = document.getElementById("profile-drawer");
+      const closeBtn = document.querySelector(".drawer-close");
+      const overlay = document.querySelector("[data-drawer-overlay]");
+
+      const closeDrawer = () => {
+        document.body.classList.remove("drawer-open");
+        drawer?.setAttribute("aria-hidden", "true");
+        profileTrigger?.setAttribute("aria-expanded", "false");
+      };
+
+      const openDrawer = () => {
+        document.body.classList.add("drawer-open");
+        drawer?.setAttribute("aria-hidden", "false");
+        profileTrigger?.setAttribute("aria-expanded", "true");
+      };
+
+      profileTrigger?.addEventListener("click", () => {
+        const isOpen = document.body.classList.contains("drawer-open");
+        if (isOpen) {
+          closeDrawer();
+        } else {
+          openDrawer();
+        }
+      });
+
+      closeBtn?.addEventListener("click", closeDrawer);
+      overlay?.addEventListener("click", closeDrawer);
+    })();
+  </script>
 </body>
+
 </html>
