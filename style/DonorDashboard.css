@@ -1,0 +1,126 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fafafa;
+  color: #0a3925;
+}
+
+.dashboard {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.profile-card {
+  background: #e7f9ec;
+  padding: 1.5rem;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #b2f2bb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.edit-btn {
+  margin-left: auto;
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.section {
+  margin-top: 2rem;
+}
+
+.section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+}
+
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.green-card {
+  background: #e6f9e8;
+}
+
+.error-card {
+  background: #fde8e8;
+  color: #c00;
+  font-weight: bold;
+}
+
+.center-msg {
+  text-align: center;
+  color: #4b4b4b;
+  padding: 1rem;
+}
+
+.add-link {
+  color: #16a34a;
+  font-weight: bold;
+  margin-left: 1rem;
+  text-decoration: none;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: auto 120px auto 120px auto 120px;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+input, select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.save-btn {
+  background: #16a34a;
+  color: white;
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+.download-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #16a34a;
+  border-radius: 8px;
+  background: white;
+  color: #16a34a;
+  cursor: pointer;
+}
+
+.checklist label {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.profile-icon {
+  width: 12px;
+  height: 12px;
+  fill: #0a3925;
+}
