@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donor Dashboard</title>
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a class="nav-brand" href="/donation-frontend/">Bright Ethiopia</a>
+    <div class="nav-links">
+      <a class="nav-item" href="/donation-frontend/">Home</a>
+      <a class="nav-item" href="/donation-frontend/ngos">NGOs</a>
+      <a class="nav-item" href="/donation-frontend/about">About</a>
+
+      <svg class="profile-icon" viewBox="0 0 496 512">
+        <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/>
+      </svg>
+    </div>
+  </nav>
+  <main class="dashboard">
+    <section class="profile-card">
+      <div class="circle">
+        <span>YT</span>
+      </div>
+      <div>
+        <h2>Welcome, Yordanos Teshome!</h2>
+        <p>You haven’t donated yet — <strong>start by exploring campaigns below.</strong></p>
+      </div>
+      <button class="edit-btn">Edit Profile</button>
+    </section>
+
+    <section class="section">
+      <h3>Donation Overview</h3>
+      <div class="card green-card">Once you donate, you’ll see your donation history here.</div>
+    </section>
+
+    <section class="section">
+      <h3>Active Campaigns</h3>
+      <p class="center-msg">No active campaigns at the moment.</p>
+    </section>
+
+    <section class="section">
+      <h3>Impact & Transparency</h3>
+      <div class="card green-card">Your receipts and impact updates will appear here after your first donation.</div>
+    </section>
+
+    <section class="section">
+      <h3>Saved Campaigns</h3>
+      <div class="card green-card">Bookmark campaigns you care about to find them here.</div>
+    </section>
+
+    <section class="section">
+      <h3>Notifications</h3>
+      <div class="card">No updates yet.</div>
+    </section>
+
+    <section class="section">
+      <h3>Payment & Settings</h3>
+      <div class="card error-card">Failed to load payment methods</div>
+    </section>
+
+    <section class="section">
+      <h4>Saved Payment Methods</h4>
+      <div class="card green-card">
+        You haven’t added any payment methods yet.
+        <a href="#" class="add-link">+ Add Method</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3>Recurring Donations</h3>
+      <div class="card green-card">
+        <div class="form-row">
+          <label>Enable</label>
+          <select><option>Off</option></select>
+
+          <label>Amount (ETB)</label>
+          <input type="text" placeholder="e.g., 200">
+
+          <label>Frequency</label>
+          <select><option>Daily</option></select>
+        </div>
+        <button class="save-btn">Save Recurring</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3>Transaction History</h3>
+      <div class="card">
+        <p>No transactions yet.</p>
+        <button class="download-btn">Download Receipts (PDF)</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3>Notifications & Security</h3>
+      <div class="card">
+        <div class="checklist">
+          <label><input type="checkbox" checked> Email me receipts</label>
+          <label><input type="checkbox" checked> Remind me before recurring charges</label>
+          <label><input type="checkbox" checked> Notify me about expiring cards</label>
+        </div>
+        <button class="save-btn">Save Preferences</button>
+      </div>
+    </section>
+    <section class="section">
+      <h3>Community & Recognition</h3>
+      <div class="card green-card">
+        Unlock badges and milestones by making your first donation!
+      </div>
+    </section>
+  </main>
+</body>
+</html>
