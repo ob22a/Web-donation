@@ -151,12 +151,14 @@ body.page-dashboard {
 }
 
 .btn-secondary {
-  background-color: #f59e0b;
-  color: var(--white);
+  background-color: var(--white);
+  color: var(--primary-green);
+  border: 1px solid var(--primary-green);
 }
 
 .btn-secondary:hover {
-  background-color: #d97706;
+  background-color: var(--light-green);
+  color: var(--dark-green);
 }
 
 .link-button {
@@ -256,12 +258,13 @@ body.page-dashboard {
 }
 
 .dashboard-container .campaigns-list .campaign-side {
-  flex: 0 0 260px;
+  flex: 0 1 260px; /* changed from 0 0 260px to allow shrinking */
   display: flex !important;
   flex-direction: column;
   align-items: flex-end !important;
   gap: 0.5rem;
   margin-left: 1rem;
+  max-width: 100%; /* prevent overflow */
 }
 
 .dashboard-container .campaigns-list .progress-track {
@@ -323,25 +326,6 @@ body.page-dashboard {
   background: rgba(16, 185, 129, 0.03);
 }
 
-@media (max-width: 680px) {
-  .donation-table {
-    min-width: 0;
-    font-size: 0.9rem;
-  }
-  .donation-table thead {
-    display: none;
-  }
-  .donation-table tbody td {
-    display: block;
-    width: 100%;
-  }
-  .donation-table tbody td[data-label]::before {
-    content: attr(data-label) ": ";
-    font-weight: 700;
-    color: var(--gray-700);
-  }
-}
-
 .show-donations-btn {
   display: inline-flex;
   align-items: center;
@@ -373,16 +357,24 @@ body.page-dashboard {
 @media (max-width: 680px) {
   .campaign-item {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start; /* change from stretch */
+    gap: 0.5rem; /* optional: reduce vertical spacing */
   }
+
   .campaign-side {
     width: 100%;
+    height: fit-content;
+    margin-left: 0; /* remove horizontal margin that becomes vertical space */
     align-items: flex-start;
+    gap: 0.25rem; /* optional: reduce spacing between side elements */
+    flex: auto; /* reset flex basis */
   }
+
   .campaign-actions {
     justify-content: flex-start;
   }
 }
+
 
 @media (max-width: 680px) {
   .dashboard-container .campaigns-list .campaign-item {
@@ -392,6 +384,7 @@ body.page-dashboard {
   .dashboard-container .campaigns-list .campaign-side {
     width: 100%;
     align-items: flex-start;
+    flex: auto; /* reset flex basis */
   }
   .dashboard-container .campaigns-list .campaign-actions {
     justify-content: flex-start;
