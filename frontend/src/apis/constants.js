@@ -1,0 +1,1 @@
+export const VITE_APP_API_URI = 'http://localhost:3001/api'
