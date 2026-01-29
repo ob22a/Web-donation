@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Campaigns</title>
+    <link rel="stylesheet" href="../style/base.css" />
+    <link rel="stylesheet" href="../style/header.css" />
+    <link rel="stylesheet" href="../style/mycampaigns.css" />
+    <link rel="stylesheet" href="../style/responsive.css" />
+  </head>
+  <body class="page-my-campaigns">
+    <header class="main-header">
+      <a href="/home.html" class="brand-title">Bright Et</a>
+      <button
+        class="nav-toggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+      <nav class="primary-nav">
+        <a href="home.html">Home</a>
+        <a href="NGOs.html">NGOs</a>
+        <a href="about.html">About</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+      </nav>
+    </header>
+    <div class="container">
+      <div class="header">
+        <h2 class="title">My Campaigns</h2>
+
+        <input
+          id="create-toggle"
+          class="create-toggle"
+          type="checkbox"
+          aria-hidden="true"
+        />
+
+        <label for="create-toggle" class="create-button"
+          >+ Create Campaign</label
+        >
+
+        <div class="create-panel">
+          <form
+            id="createCampaignForm"
+            class="create-form"
+            action="#"
+            method="post"
+            novalidate
+          >
+            <label>
+              Title
+              <input
+                type="text"
+                name="title"
+                required
+                placeholder="Campaign title"
+              />
+            </label>
+
+            <label>
+              Description
+              <textarea
+                name="description"
+                rows="4"
+                required
+                placeholder="Short description"
+              ></textarea>
+            </label>
+
+            <label>
+              Target Amount (ETB)
+              <input
+                type="number"
+                name="target"
+                required
+                min="1"
+                placeholder="e.g. 100000"
+              />
+            </label>
+
+            <label>
+              Initial Raised (ETB)
+              <input type="number" name="raised" min="0" value="0" />
+            </label>
+
+            <label>
+              Status
+              <select name="status">
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+              </select>
+            </label>
+
+            <div class="modal-actions">
+              <label for="create-toggle" class="modal-close-button"
+                >Cancel</label
+              >
+
+              <button type="submit" class="modal-submit-button">
+                Create Campaign
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="filter-buttons">
+        <button class="filter-button active">All</button>
+        <button class="filter-button">Active</button>
+        <button class="filter-button">Completed</button>
+      </div>
+
+      <div class="campaign-grid">
+        <div class="campaign-card">
+          <div class="campaign-title">Education for 100 Children</div>
+          <div class="campaign-status">Status: active</div>
+          <div class="campaign-description">
+            Our goal is to provide school supplies and tuition fees for 100
+            underprivileged children this semester.
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: 60%"></div>
+          </div>
+          <div class="donation-info">
+            <span>Raised: 60,000 ETB</span>
+            <span>Target: 100,000 ETB</span>
+          </div>
+          <a href="/campaign/123" class="view-button">View</a>
+        </div>
+
+        <div class="campaign-card">
+          <div class="campaign-title">Clean Water Initiative - Phase I</div>
+          <div class="campaign-status completed">Status: completed</div>
+          <div class="campaign-description">
+            We successfully built a new well and distribution system in the
+            rural community of Arba Minch.
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: 100%"></div>
+          </div>
+          <div class="donation-info">
+            <span>Raised: 250,000 ETB</span>
+            <span>Target: 200,000 ETB</span>
+          </div>
+          <a href="/campaign/456" class="view-button">View</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const header = document.querySelector(".main-header");
+        const toggle = document.querySelector(".nav-toggle");
+        if (header && toggle) {
+          toggle.addEventListener("click", function () {
+            const isOpen = header.classList.toggle("nav-open");
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,387 @@
+body.page-landing {
+  --bg-color: var(--light-green);
+}
+
+.main-wrapper {
+  background-image: url("./tree.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+}
+
+section {
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  font-size: 2rem;
+  color: var(--primary-green);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary-green);
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  background-color: var(--dark-green);
+}
+
+.btn-outline {
+  background-color: var(--white);
+  color: var(--primary-green);
+  border: 2px solid var(--primary-green);
+}
+
+.btn-outline:hover {
+  background-color: var(--light-green);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.hero-section {
+  padding: 2.5rem 1rem;
+}
+
+.hero-card {
+  background: var(--white);
+  max-width: 1150px;
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-image {
+  width: 100%;
+  height: 300px;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-content {
+  padding: 2rem;
+  text-align: center;
+  background: var(--light-green);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-content h1 {
+  color: var(--dark-green);
+  font-size: 1.875rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  color: var(--primary-green);
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+}
+
+@media (min-width: 768px) {
+  .hero-card {
+    flex-direction: row;
+  }
+  .hero-image,
+  .hero-content {
+    width: 50%;
+  }
+  .hero-image {
+    height: auto;
+  }
+  .hero-content {
+    padding: 3rem;
+  }
+  .hero-content h1 {
+    font-size: 2.25rem;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1150px;
+}
+
+@media (min-width: 768px) {
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.featured-section {
+  background-color: var(--light-green);
+}
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--accent-green);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-image-wrapper {
+  position: relative;
+  height: 200px;
+}
+
+.card-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ngo-logo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  padding: 2px;
+  object-fit: contain;
+  border: 1px solid var(--accent-green);
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: center;
+}
+
+.card-body h3 {
+  color: var(--primary-green);
+  margin-bottom: 0.5rem;
+}
+
+.card-body p {
+  margin-bottom: 1.5rem;
+  color: var(--gray-text);
+}
+
+.card-body button {
+  margin-top: auto;
+}
+
+.why-donate-section {
+  background-color: var(--white);
+}
+
+.feature-box {
+  background-color: var(--light-green);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+.feature-box .icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.feature-box h3 {
+  color: var(--dark-green);
+  margin-bottom: 0.5rem;
+}
+
+.feature-box p {
+  color: var(--primary-green);
+}
+
+.testimonials-section {
+  background-color: var(--light-green);
+}
+
+.testimonial-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.testimonial-card p {
+  font-style: italic;
+  color: var(--dark-green);
+  margin-bottom: 1rem;
+}
+
+.testimonial-card .author {
+  font-weight: bold;
+  color: var(--primary-green);
+}
+
+.testimonial-card .role {
+  font-size: 0.875rem;
+  color: #16a34a;
+}
+
+.cta-section {
+  background-color: var(--white);
+  text-align: center;
+}
+
+.cta-section p {
+  max-width: 600px;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+  color: var(--dark-green);
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.campaigns-section {
+  background-color: #f9fafb;
+}
+
+.campaign-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--accent-green);
+  box-shadow: var(--shadow);
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.campaign-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.campaign-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.campaign-content h3 {
+  font-size: 1.5rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+}
+
+.campaign-meta {
+  font-size: 1.125rem;
+  color: var(--gray-text);
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .campaign-card {
+    flex-direction: row;
+  }
+  .campaign-card img {
+    width: 50%;
+    height: auto;
+  }
+  .campaign-content {
+    width: 50%;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+footer {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  text-align: center;
+  color: var(--primary-green);
+}
+
+.footer-logos {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-group img {
+  height: 40px;
+  width: auto;
+}
+
+.logo-group span {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.footer-links a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.copyright {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}

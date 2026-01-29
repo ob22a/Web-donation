@@ -1,0 +1,109 @@
+
+.ngo-dashboard-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 1rem;
+}
+
+.ngo-dashboard-card {
+  background-color: white;
+  padding: 2rem;
+  margin-top: calc(var(--header-height) + var(--header-gap));
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 32rem; 
+  border: 1px solid var(--regular-green);
+}
+
+.dashboard-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: var(--dark-green);
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--label-color);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: vertical; 
+  min-height: 40px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--regular-green);
+  box-shadow: 0 0 0 3px var(--white-green);
+}
+
+.primary-button {
+  width: 100%;
+  border-radius: 0.5rem;
+  background-color: var(--dark-green);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 300ms ease-out, transform 150ms ease-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.primary-button:hover {
+  background-color: var(--mid-green);
+  transform: translateY(-1px);
+}
+
+.message-box {
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.success-message {
+  background-color: var(--white-green);
+  color: var(--mid-green);
+  border: 1px solid var(--light-green);
+}
+
+.error-message {
+  background-color: #fee2e2; 
+  color: var(--error-color);
+  border: 1px solid #f87171; 
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .ngo-dashboard-card {
+    padding: 1.5rem;
+  }
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+}

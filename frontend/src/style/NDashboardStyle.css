@@ -1,0 +1,406 @@
+
+body.page-dashboard {
+  background: linear-gradient(
+    to bottom right,
+    var(--light-green, #f0fdf4),
+    var(--white)
+  );
+  min-height: 100vh;
+  margin: 0;
+  padding-top: calc(var(--header-height) + var(--header-gap));
+  display: block;
+}
+
+.page-my-campaigns .container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-block: 2rem;
+  box-sizing: border-sizing;
+}
+
+.dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+  padding-block: 2rem;
+  margin: 0 auto 2rem;
+}
+
+.section-card {
+  background-color: rgba(255, 255, 255, 0.96);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.header-text {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary-green);
+  margin: 1rem 0 1.5rem 0;
+  text-align: left;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--gray-900);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--gray-100);
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--green-700);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.campaigns-list {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  min-height: 150px;
+}
+
+.campaign-placeholder {
+  padding: 1rem;
+  text-align: center;
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+}
+
+.campaign-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.table-wrapper {
+  background: linear-gradient(#fff, #fff);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.donation-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.donation-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  color: var(--gray-900);
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid #eef2f0;
+  z-index: 3;
+}
+
+.donation-table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  color: var(--gray-900);
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.donation-table tbody tr:nth-child(odd) {
+  background: rgba(246, 252, 245, 0.6);
+}
+
+.donation-table tbody tr:hover {
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background-color: var(--green-700);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background-color: var(--green-600);
+}
+
+.btn-secondary {
+  background-color: var(--white);
+  color: var(--primary-green);
+  border: 1px solid var(--primary-green);
+}
+
+.btn-secondary:hover {
+  background-color: var(--light-green);
+  color: var(--dark-green);
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--green-700);
+  text-decoration: underline;
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.campaigns-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.campaign-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  border: 1px solid #eef2f0;
+}
+
+.campaign-info {
+  flex: 1 1 auto;
+  min-width: 220px;
+}
+
+.campaign-side {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.progress-track {
+  width: 100%;
+  max-width: 220px;
+  height: 10px;
+  background: #ecfdf5;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary-green);
+  transition: width 300ms ease;
+}
+
+.campaign-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.dashboard-container .campaigns-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-container .campaigns-list .campaign-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  border: 1px solid #eef2f0;
+}
+
+.dashboard-container .campaigns-list .campaign-info {
+  flex: 1 1 auto;
+  min-width: 220px;
+}
+
+.dashboard-container .campaigns-list .campaign-side {
+  flex: 0 1 260px; 
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-end !important;
+  gap: 0.5rem;
+  margin-left: 1rem;
+  max-width: 100%; 
+}
+
+.dashboard-container .campaigns-list .progress-track {
+  width: 100%;
+  max-width: 220px;
+  height: 10px;
+  background: #ecfdf5;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dashboard-container .campaigns-list .campaign-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end !important;
+  width: 100%;
+}
+
+.table-wrapper {
+  background: linear-gradient(#fff, #fff);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.donation-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.donation-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  color: var(--gray-900);
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid #eef2f0;
+  z-index: 3;
+}
+
+.donation-table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  color: var(--gray-900);
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.donation-table tbody tr:nth-child(odd) {
+  background: rgba(246, 252, 245, 0.6);
+}
+
+.donation-table tbody tr:hover {
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.show-donations-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--primary-green);
+  background: transparent;
+  color: var(--primary-green);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease,
+    transform 120ms ease;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.06);
+}
+
+.show-donations-btn:hover {
+  background: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.show-donations-btn.sm {
+  padding: 0.35rem 0.6rem;
+  font-weight: 600;
+  border-width: 1px;
+}
+
+@media (max-width: 680px) {
+  .campaign-item {
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 0.5rem; 
+  }
+
+  .campaign-side {
+    width: 100%;
+    height: fit-content;
+    margin-left: 0; 
+    align-items: flex-start;
+    gap: 0.25rem; 
+    flex: auto; 
+  }
+
+  .campaign-actions {
+    justify-content: flex-start;
+  }
+}
+
+
+@media (max-width: 680px) {
+  .dashboard-container .campaigns-list .campaign-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dashboard-container .campaigns-list .campaign-side {
+    width: 100%;
+    align-items: flex-start;
+    flex: auto; 
+  }
+  .dashboard-container .campaigns-list .campaign-actions {
+    justify-content: flex-start;
+  }
+}
+
+.dashboard-container .campaigns-list .campaign-info h5 {
+  color: var(--primary-green);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}

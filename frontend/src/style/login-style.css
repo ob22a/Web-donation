@@ -1,0 +1,133 @@
+body.page-login {
+  background: var(--light-green);
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-top: calc(var(--header-height) + var(--header-gap));
+  display: block;
+}
+
+body.page-login .page-center {
+  min-height: calc(100vh - (var(--header-height) + var(--header-gap)));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-form-container {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 28rem;
+}
+
+.form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--primary-green);
+  text-align: center;
+}
+
+.error-message {
+  margin-bottom: 1rem;
+  color: #dc2626;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+.password-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--gray-text);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: var(--dark-green);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12);
+}
+
+.relative-group {
+  position: relative;
+}
+.form-input.pr-10 {
+  padding-right: 2.5rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #4b5563;
+}
+
+.submit-btn,
+.register-btn {
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn {
+  width: 100%;
+}
+
+.submit-btn:hover,
+.register-btn:hover {
+  background-color: var(--dark-green);
+}
+
+.cta-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cta-container.mt-4 {
+  margin-top: 1rem;
+}
+.cta-container.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.cta-text {
+  margin-right: 0.5rem;
+  color: var(--primary-green);
+  font-weight: 500;
+}
+
+.register-btn {
+  width: auto;
+  padding: 0.5rem 1.5rem;
+}

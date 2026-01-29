@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Information</title>
+    <link rel="stylesheet" href="style/base.css">
+    <link rel="stylesheet" href="style/header.css">
+    <link rel="stylesheet" href="style/contact.css">
+    <link rel="stylesheet" href="style/responsive.css">
+</head>
+<body>
+    <header class="main-header">
+        <a href="/home.html" class="brand-title">Bright Et</a>
+        <button
+          class="nav-toggle"
+          aria-label="Toggle navigation"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <nav class="primary-nav">
+          <a href="/home.html">Home</a>
+          <a href="NGOs.html">NGOs</a>
+          <a href="about.html">About</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </nav>
+    </header>
+
+    <section class="contact-section">
+        <div class="contact-header">
+            <h1 class="contact-title">Contact Information</h1>
+            <p class="contact-subtitle">
+                For inquiries, support, or partnership opportunities, please contact us:
+            </p>
+        </div>
+        <div class="contact-card">
+            <div class="contact-row">
+                <span class="label">Email:</span>
+                <a class="value-link" href="mailto:info@ethio-donations.org">
+                    info@ethio-donations.org
+                </a>
+            </div>
+            <div class="contact-row">
+                <span class="label">Phone:</span>
+                <a class="value-link" href="tel:+251911287392">
+                    +251 911287392
+                </a>
+            </div>
+            <div class="contact-row">
+                <span class="label">Address:</span>
+                <span class="value-text">Addis Ababa, Ethiopia</span>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        (function () {
+          const header = document.querySelector(".main-header");
+          const toggle = document.querySelector(".nav-toggle");
+  
+          if (!header || !toggle) return;
+  
+          toggle.addEventListener("click", function () {
+            const isOpen = header.classList.toggle("nav-open");
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          });
+        })();
+    </script>
+</body>
+</html>

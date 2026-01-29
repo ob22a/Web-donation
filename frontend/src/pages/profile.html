@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile – Ethiopian NGO Digital Donations</title>
+    <link rel="stylesheet" href="../style/base.css" />
+    <link rel="stylesheet" href="../style/header.css" />
+    <link rel="stylesheet" href="../style/profile.css" />
+    <link rel="stylesheet" href="../style/drawer.css" />
+    <link rel="stylesheet" href="../style/responsive.css" />
+  </head>
+  <body>
+    <header class="main-header logged-in">
+      <a href="/home.html" class="brand-title">Bright Et</a>
+      <nav class="primary-nav logged-in">
+        <a href="/home.html" class="tab">Home</a>
+        <a href="/NGOs.html" class="tab">NGOs</a>
+        <a href="/about.html" class="tab">About</a>
+        <button
+          type="button"
+          class="profile-trigger user-icon"
+          aria-label="Open profile menu"
+          aria-expanded="false"
+          aria-controls="profile-drawer"
+        >
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            stroke-width="0"
+            viewBox="0 0 496 512"
+            height="1em"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title>Profile</title>
+            <path
+              d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"
+            ></path>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <main class="page-content">
+      <section class="profile-page">
+        <h1 class="profile-heading">My Profile</h1>
+
+        <div class="profile-layout">
+          <aside class="profile-sidebar">
+            <div class="profile-avatar-wrapper">
+              <div class="profile-avatar">
+                <div class="profile-avatar-circle">OD</div>
+                <button
+                  type="button"
+                  class="profile-avatar-upload"
+                  title="Upload image"
+                >
+                  <svg
+                    stroke="currentColor"
+                    fill="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 512 512"
+                    height="1em"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M512 144v288c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V144c0-26.5 21.5-48 48-48h88l12.3-32.9c7-18.7 24.9-31.1 44.9-31.1h125.5c20 0 37.9 12.4 44.9 31.1L376 96h88c26.5 0 48 21.5 48 48zM376 288c0-66.2-53.8-120-120-120s-120 53.8-120 120 53.8 120 120 120 120-53.8 120-120zm-32 0c0 48.5-39.5 88-88 88s-88-39.5-88-88 39.5-88 88-88 88 39.5 88 88z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <button type="button" class="profile-upload-link">
+                Upload image
+              </button>
+              <div class="profile-name">
+                <h2>Obssa Degefu</h2>
+                <p>Ob22adegefu123@gmail.com</p>
+              </div>
+            </div>
+
+            <div class="profile-stats">
+              <div>
+                <div class="profile-stat-label">Total donated</div>
+                <div class="profile-stat-value">ETB 0</div>
+              </div>
+              <div style="margin-top: 0.75rem">
+                <div class="profile-stat-label">Campaigns supported</div>
+                <div class="profile-stat-value">0</div>
+              </div>
+            </div>
+          </aside>
+
+          <div class="profile-main">
+            <section class="profile-card">
+              <header class="profile-card-header">
+                <h2>Personal information</h2>
+                <button type="button" class="profile-card-toggle" data-toggle="personal">
+                  Collapse
+                </button>
+              </header>
+              <div class="profile-card-body">
+                <div class="profile-form-grid">
+                  <div class="profile-field">
+                    <label for="full-name">Full name</label>
+                    <input
+                      id="full-name"
+                      class="profile-input"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+
+                  <div class="profile-email-panel">
+                    <div class="profile-email-title">Email</div>
+                    <div class="profile-email-meta">Primary</div>
+                    <div class="profile-button-row">
+                      <button type="button" class="profile-save-button">
+                        + Add secondary email
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="profile-field">
+                    <label for="phone">Phone</label>
+                    <input
+                      id="phone"
+                      class="profile-input"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                  <div class="profile-field">
+                    <label for="country">Country</label>
+                    <input
+                      id="country"
+                      class="profile-input"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                  <div class="profile-field">
+                    <label for="city">City</label>
+                    <input
+                      id="city"
+                      class="profile-input"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+
+                <div class="profile-button-row" style="margin-top: 1.25rem">
+                  <button type="button" class="profile-save-button">
+                    Save changes
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section class="profile-card collapsed" data-card="preferences">
+              <header class="profile-card-header">
+                <div>
+                  <h2>Preferences</h2>
+                  <small>Notification &amp; privacy settings</small>
+                </div>
+                <button type="button" class="profile-link-button" data-toggle="preferences">Open</button>
+              </header>
+              <div class="profile-card-body" style="display: none;">
+                <div class="profile-preferences-grid">
+                  <div class="profile-checkbox-group">
+                    <label class="profile-checkbox-label">
+                      <input type="checkbox" checked>
+                      <span>Email me receipts</span>
+                    </label>
+                    <label class="profile-checkbox-label">
+                      <input type="checkbox" checked>
+                      <span>NGO updates</span>
+                    </label>
+                    <label class="profile-checkbox-label">
+                      <input type="checkbox" checked>
+                      <span>Campaign milestones</span>
+                    </label>
+                  </div>
+                  <div class="profile-checkbox-group">
+                    <label class="profile-checkbox-label">
+                      <input type="checkbox">
+                      <span>Show my name publicly</span>
+                    </label>
+                    <label class="profile-checkbox-label">
+                      <input type="checkbox">
+                      <span>Show my total donations</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="profile-button-row">
+                  <button type="button" class="profile-save-button">Save preferences</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="profile-card collapsed" data-card="security">
+              <header class="profile-card-header">
+                <div>
+                  <h2>Security</h2>
+                  <small>Change password, 2FA</small>
+                </div>
+                <button type="button" class="profile-link-button" data-toggle="security">Open</button>
+              </header>
+              <div class="profile-card-body" style="display: none;">
+                <form class="profile-security-form">
+                  <div class="profile-security-field">
+                    <label for="current-password">Current password</label>
+                    <input id="current-password" type="password" value="">
+                  </div>
+                  <div class="profile-security-field">
+                    <label for="new-password">New password</label>
+                    <input id="new-password" type="password" value="">
+                  </div>
+                  <div class="profile-security-field">
+                    <label for="confirm-password">Confirm new password</label>
+                    <input id="confirm-password" type="password" value="">
+                  </div>
+                  <div class="profile-button-row">
+                    <button type="submit" class="profile-save-button">Change password</button>
+                  </div>
+                </form>
+              </div>
+            </section>
+
+            <section class="profile-card collapsed" data-card="payment">
+              <header class="profile-card-header">
+                <div>
+                  <h2>Payment methods</h2>
+                  <small>Add or manage cards / TeleBirr / CBE</small>
+                </div>
+                <button type="button" class="profile-link-button" data-toggle="payment">Open</button>
+              </header>
+              <div class="profile-card-body" style="display: none;">
+                <div class="profile-payment-content">
+                  <div class="profile-payment-alert">Failed to load payment methods</div>
+                  <div class="profile-payment-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                      <h4>Saved Payment Methods</h4>
+                      <button type="button" class="profile-payment-add-button">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
+                        </svg>
+                        Add Method
+                      </button>
+                    </div>
+                    <p>You haven't added any payment methods yet.</p>
+                  </div>
+                  <div class="profile-payment-section">
+                    <h4>Recurring Donations</h4>
+                    <form class="profile-payment-form-grid">
+                      <div class="profile-payment-form-field">
+                        <label for="recurring-enable">Enable</label>
+                        <select id="recurring-enable" class="mt-1">
+                          <option value="off">Off</option>
+                          <option value="on">On</option>
+                        </select>
+                      </div>
+                      <div class="profile-payment-form-field">
+                        <label for="recurring-amount">Amount (ETB)</label>
+                        <input id="recurring-amount" min="1" type="number" placeholder="e.g., 200" disabled>
+                      </div>
+                      <div class="profile-payment-form-field">
+                        <label for="recurring-frequency">Frequency</label>
+                        <select id="recurring-frequency" disabled>
+                          <option value="daily">Daily</option>
+                          <option value="weekly">Weekly</option>
+                          <option value="monthly">Monthly</option>
+                        </select>
+                      </div>
+                      <div class="profile-payment-form-submit">
+                        <button type="submit" class="profile-save-button" disabled>Save Recurring</button>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="profile-payment-white-section">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                      <h4>Transaction History</h4>
+                      <button type="button" class="profile-payment-download-button">Download Receipts (PDF)</button>
+                    </div>
+                    <p style="color: #6b7280;">No transactions yet.</p>
+                  </div>
+                  <div class="profile-payment-white-section">
+                    <h4>Notifications &amp; Security</h4>
+                    <form>
+                      <div class="profile-payment-checkbox-group">
+                        <label class="profile-payment-checkbox-label">
+                          <input type="checkbox" checked>
+                          <span>Email me receipts</span>
+                        </label>
+                        <label class="profile-payment-checkbox-label">
+                          <input type="checkbox" checked>
+                          <span>Remind me before recurring charges</span>
+                        </label>
+                        <label class="profile-payment-checkbox-label">
+                          <input type="checkbox" checked>
+                          <span>Notify me about expiring cards</span>
+                        </label>
+                      </div>
+                      <div class="profile-button-row" style="margin-top: 0.75rem;">
+                        <button type="submit" class="profile-save-button">Save Preferences</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="drawer-overlay" data-drawer-overlay></div>
+    <aside class="profile-drawer" id="profile-drawer" aria-hidden="true">
+      <button class="drawer-close" type="button" aria-label="Close menu">
+        ✕
+      </button>
+      <div class="drawer-content">
+        <div class="drawer-profile-card">
+          <div class="drawer-avatar">OD</div>
+          <h3>Obssa Degefu</h3>
+          <p>Ob22adegefu123@gmail.com</p>
+          <button type="button" class="drawer-link">View profile</button>
+        </div>
+        <div class="drawer-links">
+          <a href="/DonorDashboard.html">Dashboard</a>
+          <a href="/profile.html">Edit Profile</a>
+          <a href="#">Settings</a>
+          <a href="#">My Donations</a>
+          <a href="#">Notifications</a>
+          <button type="button">Theme 🌞/🌙</button>
+          <button type="button">Language: EN | አማ | ORO</button>
+          <a href="#">Need help?</a>
+          <button type="button">Logout</button>
+        </div>
+      </div>
+    </aside>
+
+    <script>
+      (function () {
+        const profileTrigger = document.querySelector(".profile-trigger");
+        const drawer = document.getElementById("profile-drawer");
+        const closeBtn = document.querySelector(".drawer-close");
+        const overlay = document.querySelector("[data-drawer-overlay]");
+
+        const closeDrawer = () => {
+          document.body.classList.remove("drawer-open");
+          drawer?.setAttribute("aria-hidden", "true");
+          profileTrigger?.setAttribute("aria-expanded", "false");
+        };
+
+        const openDrawer = () => {
+          document.body.classList.add("drawer-open");
+          drawer?.setAttribute("aria-hidden", "false");
+          profileTrigger?.setAttribute("aria-expanded", "true");
+        };
+
+        profileTrigger?.addEventListener("click", () => {
+          const isOpen = document.body.classList.contains("drawer-open");
+          if (isOpen) {
+            closeDrawer();
+          } else {
+            openDrawer();
+          }
+        });
+
+        closeBtn?.addEventListener("click", closeDrawer);
+        overlay?.addEventListener("click", closeDrawer);
+      })();
+
+      (function () {
+        const toggleButtons = document.querySelectorAll("[data-toggle]");
+        
+        toggleButtons.forEach((button) => {
+          button.addEventListener("click", (e) => {
+            const cardType = button.getAttribute("data-toggle");
+            const card = button.closest(".profile-card");
+            
+            if (!card) return;
+            
+            const isCollapsed = card.classList.contains("collapsed");
+            const body = card.querySelector(".profile-card-body");
+            
+            if (isCollapsed) {
+              card.classList.remove("collapsed");
+              if (body) body.style.display = "block";
+              if (cardType === "personal") {
+                button.textContent = "Collapse";
+              } else {
+                button.textContent = "Collapse";
+              }
+            } else {
+              card.classList.add("collapsed");
+              if (body) body.style.display = "none";
+              if (cardType === "personal") {
+                button.textContent = "Open";
+              } else {
+                button.textContent = "Open";
+              }
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
+
