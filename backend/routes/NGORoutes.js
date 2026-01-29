@@ -15,7 +15,7 @@ export default async function ngoRoutes(req,res,pathname){
         await updateNGO(req,res);
         return true;
     }
-    if (req.method === "POST" && pathname.startsWith("/api/ngo/banner/")) {
+    if (req.method === "POST" && pathname ==="/api/ngo/banner/") {
         if (!auth(req, res)) return true;
 
         const id = pathname.split("/").filter(Boolean)[3];

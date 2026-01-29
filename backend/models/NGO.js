@@ -5,6 +5,7 @@ const ngoSchema = new mongoose.Schema({
   ngoName: { type: String },
   description: { type: String },
   category: { type: String },
+  story: { type: String },
   bannerImage: { type: String },
 });
 

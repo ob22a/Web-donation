@@ -5,8 +5,7 @@ import Sidebar from './components/Sidebar';
 import { useAuth } from './context/AuthContext';
 
 const Layout = () => {
-    const { user } = useAuth();
-    const isDonor = user?.role === 'donor';
+    const { isLoggedIn, user } = useAuth();
     const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
     const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
@@ -14,7 +13,7 @@ const Layout = () => {
     return (
         <div className={isDrawerOpen ? 'drawer-open' : ''}>
             <Header onToggleDrawer={toggleDrawer} />
-            {isDonor && <Sidebar isOpen={isDrawerOpen} onToggleDrawer={toggleDrawer} />}
+            {isLoggedIn && <Sidebar isOpen={isDrawerOpen} onToggleDrawer={toggleDrawer} />}
             <main className="page-content">
                 <Outlet />
             </main>

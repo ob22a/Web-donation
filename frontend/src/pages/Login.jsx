@@ -1,17 +1,35 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import useFetch from '../hooks/useFetch';
+import { loginUser } from '../apis/auth';
 import '../style/login-style.css';
 
 const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const { loading, error, fetchData } = useFetch();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        login('donor'); // Default to donor for this mock
-        navigate('/profile'); // Direct to Profile
+        try {
+            const response = await fetchData(loginUser, { email, password });
+            if (response.user) {
+                login(response.user);
+                // Redirect based on role if needed, or default to profile
+                if (response.user.role === 'ngo') {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/profile');
+                }
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+        }
     };
 
     return (
@@ -19,7 +37,7 @@ const Login = () => {
             <div className="login-form-container">
                 <h2 className="form-title">Login</h2>
 
-                <div className="error-message"></div>
+                {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
 
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
@@ -29,6 +47,8 @@ const Login = () => {
                             id="email"
                             className="form-input"
                             placeholder="Enter your email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
@@ -41,6 +61,8 @@ const Login = () => {
                                 id="password"
                                 className="form-input pr-10"
                                 placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                             <button
@@ -83,7 +105,9 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className="submit-btn">Login</button>
+                    <button type="submit" className="submit-btn" disabled={loading}>
+                        {loading ? 'Logging in...' : 'Login'}
+                    </button>
 
                     <div className="cta-container mt-4 mb-2">
                         <span className="cta-text"> Create new account? </span>

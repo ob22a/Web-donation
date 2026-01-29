@@ -103,18 +103,162 @@ export const register = async (req, res) => { // handles both register and regis
   }
 };
 
-export const getProfile = async (req,res)=>{ // Donor info for setting and all pages
-  try{
+export const getProfile = async (req, res) => { // Donor info for setting and all pages
+  try {
     const userId = req.user.userId;
-    
+
     let user;
-    if(req.user.role === 'donor') user = await Donor.findById(userId).select('-password');
+    if (req.user.role === 'donor') user = await Donor.findById(userId).select('-password');
     else user = await NGO.findById(userId).select('-password');
 
-    if(!user) return sendJson(res,404,{message:'User not found'});
+    if (!user) return sendJson(res, 404, { message: 'User not found' });
 
-    sendJson(res,200,{user});
-  }catch(err){
-    sendJson(res,500,{message:'Server error'});
+    const userObj = user.toObject({ virtuals: true });
+    delete userObj.password;
+
+    sendJson(res, 200, {
+      user: {
+        ...userObj,
+        id: userObj._id
+      }
+    });
+  } catch (err) {
+    console.error('getProfile error:', err);
+    sendJson(res, 500, { message: 'Server error' });
   }
 }
+
+export const logout = async (req, res) => {
+  try {
+    // remove auth from httpOnly cookie
+    res.setHeader(
+      "Set-Cookie",
+      "token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict"
+    );
+    sendJson(res, 200, { message: 'Logged out successfully' });
+  } catch (err) {
+    console.error(err);
+    sendJson(res, 500, { message: 'Server error' });
+  }
+}
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const role = req.user.role;
+    const data = req.body;
+
+    let user;
+    if (role === "donor") {
+      user = await Donor.findById(userId);
+    } else {
+      user = await NGO.findById(userId);
+    }
+
+    if (!user) return sendJson(res, 404, { message: "User not found" });
+
+    // 1. General Fields (Common)
+    const generalFields = ["name", "profilePicture", "secondaryEmail", "phoneNumber", "city", "country"];
+    generalFields.forEach((field) => {
+      if (data[field] !== undefined) user[field] = data[field];
+    });
+
+    // 2. Role-specific Fields
+    if (role === "donor") {
+      if (data.preference) {
+        user.preference = { ...user.preference, ...data.preference };
+      }
+      if (data.paymentMethods && data.newPaymentMethod) {
+        const method = data.newPaymentMethod;
+        if (method.type && method.identifier) {
+          if (method.isDefault) {
+            user.paymentMethods.forEach((pm) => (pm.isDefault = false));
+          }
+          user.paymentMethods.push(method);
+        }
+      }
+    } else if (role === "ngo") {
+      const ngoFields = ["ngoName", "category", "description", "story", "bannerImage"];
+      ngoFields.forEach((field) => {
+        if (data[field] !== undefined) user[field] = data[field];
+      });
+    }
+
+    // 3. Password Update
+    if (data.oldPassword && data.newPassword && data.confirmPassword) {
+      const { oldPassword, newPassword, confirmPassword } = data;
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) return sendJson(res, 401, { message: "Old password is incorrect" });
+
+      if (newPassword !== confirmPassword) {
+        return sendJson(res, 400, { message: "Passwords do not match" });
+      }
+
+      user.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    await user.save();
+
+    const userObj = user.toObject({ virtuals: true });
+    delete userObj.password;
+
+    sendJson(res, 200, {
+      message: "Profile updated successfully",
+      user: { ...userObj, id: userObj._id },
+    });
+  } catch (err) {
+    console.error("updateProfile error:", err);
+    sendJson(res, 500, { message: "Server error" });
+  }
+};
+
+export const uploadProfilePicture = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const role = req.user.role;
+
+    let user;
+    if (role === "donor") {
+      user = await Donor.findById(userId);
+    } else {
+      user = await NGO.findById(userId);
+    }
+
+    if (!user) return sendJson(res, 404, { message: "User not found" });
+
+    const form = formidable({ multiples: false });
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        console.error("Form parse error:", err);
+        return sendJson(res, 400, { message: "File upload failed" });
+      }
+
+      const file = files.profilePicture;
+      if (!file) {
+        return sendJson(res, 400, { message: "No file uploaded" });
+      }
+
+      try {
+        const result = await cloudinary.uploader.upload(file.filepath, {
+          folder: "profile_pictures",
+          transformation: [{ width: 400, height: 400, crop: "fill" }],
+        });
+
+        user.profilePicture = result.secure_url;
+        await user.save();
+
+        sendJson(res, 200, {
+          message: "Profile picture updated",
+          profilePicture: result.secure_url,
+        });
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr);
+        sendJson(res, 500, { message: "Image upload failed" });
+      }
+    });
+  } catch (err) {
+    console.error("uploadProfilePicture error:", err);
+    sendJson(res, 500, { message: "Server error" });
+  }
+};

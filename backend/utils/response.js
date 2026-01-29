@@ -1,14 +1,12 @@
 export function sendJson(res, status, data, cookies = []) {
   if (res.headersSent) return;
 
-  const headers = {
-    "Content-Type": "application/json",
-  };
+  res.setHeader("Content-Type", "application/json");
 
   if (cookies.length) {
-    headers["Set-Cookie"] = cookies;
+    res.setHeader("Set-Cookie", cookies);
   }
 
-  res.writeHead(status, headers);
+  res.statusCode = status;
   res.end(JSON.stringify(data));
 }

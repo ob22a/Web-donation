@@ -3,10 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 const Home = () => {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, user } = useAuth();
 
     if (isLoggedIn) {
-        return <Navigate to="/dashboard" replace />;
+        if (user?.role === 'ngo') return <Navigate to="/dashboard" replace />;
+        return <Navigate to="/donor-dashboard" replace />;
     }
 
     return (

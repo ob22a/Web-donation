@@ -1,81 +1,107 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import useFetch from '../hooks/useFetch';
+import { getCampaign } from '../apis/campaigns';
+import { createDonation, getDonationsByCampaign } from '../apis/donations';
+import { useAuth } from '../context/AuthContext';
 import '../style/CampaignDetail.css';
-
-// Mock Data
-const CAMPAIGN_DATA = {
-    id: '123',
-    title: 'Education for 100 Children',
-    description: 'Our mission is to bridge the educational gap for 100 children in underserved communities. By providing essential school supplies, covering tuition fees, and offering mentorship, we aim to empower the next generation with the tools they need for a brighter future. Every contribution helps transform a life.',
-    raised: 64200,
-    target: 100000,
-    status: 'In Progress',
-    organizer: 'Bright Futures NGO'
-};
-
-const INITIAL_DONORS = [
-    { id: 1, name: 'Abebe Bikila', amount: 500, date: '2023-10-01' },
-    { id: 2, name: 'Chala Muleta', amount: 200, date: '2023-10-02' },
-    { id: 3, name: 'Anonymous', amount: 1000, date: '2023-10-03' },
-    { id: 4, name: 'Tigist Assefa', amount: 1500, date: '2023-10-05' },
-    { id: 5, name: 'Hagos Gebre', amount: 300, date: '2023-10-06' },
-    { id: 6, name: 'Fatima Ahmed', amount: 2500, date: '2023-10-08' },
-];
 
 const CampaignDetail = () => {
     const { id } = useParams();
-    const [donors, setDonors] = useState(INITIAL_DONORS);
+    const { user } = useAuth();
+    const { loading, error, fetchData } = useFetch();
+
+    const [campaign, setCampaign] = useState(null);
+    const [donors, setDonors] = useState([]);
+    const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
     const [page, setPage] = useState(1);
-    const itemsPerPage = 4;
 
     const [formData, setFormData] = useState({ name: '', amount: '', isAnonymous: false });
     const [donorFilter, setDonorFilter] = useState('');
 
-    const progress = Math.min((CAMPAIGN_DATA.raised / CAMPAIGN_DATA.target) * 100, 100);
+    const loadCampaignData = useCallback(async () => {
+        try {
+            const response = await fetchData(getCampaign, id);
+            if (response.campaign) {
+                setCampaign(response.campaign);
+            }
+        } catch (err) {
+            console.error('Failed to load campaign:', err);
+        }
+    }, [id, fetchData]);
 
-    const handleManualSubmit = (e) => {
-        e.preventDefault();
-        const newDonor = {
-            id: Date.now(),
-            name: formData.isAnonymous ? 'Anonymous' : (formData.name || 'Anonymous'),
-            amount: Number(formData.amount),
-            date: new Date().toISOString().split('T')[0]
-        };
-        setDonors([newDonor, ...donors]);
-        setFormData({ name: '', amount: '', isAnonymous: false });
-    };
-
-    const filteredDonors = useMemo(() => {
-        return donors.filter(d => d.name.toLowerCase().includes(donorFilter.toLowerCase()));
-    }, [donors, donorFilter]);
-
-    const paginatedDonors = useMemo(() => {
-        const start = (page - 1) * itemsPerPage;
-        return filteredDonors.slice(start, start + itemsPerPage);
-    }, [filteredDonors, page]);
-
-    const totalPages = Math.ceil(filteredDonors.length / itemsPerPage);
+    const loadDonations = useCallback(async (pageNum) => {
+        try {
+            const response = await fetchData(getDonationsByCampaign, id, pageNum);
+            if (response.donations) {
+                setDonors(response.donations);
+                setPagination(response.pagination);
+            }
+        } catch (err) {
+            console.error('Failed to load donations:', err);
+        }
+    }, [id, fetchData]);
 
     useEffect(() => {
         document.body.className = 'page-my-campaigns';
+        loadCampaignData();
+        loadDonations(1);
         return () => { document.body.className = ''; };
-    }, []);
+    }, [loadCampaignData, loadDonations]);
+
+    const progress = useMemo(() => {
+        if (!campaign) return 0;
+        return Math.min((campaign.raisedAmount / campaign.targetAmount) * 100, 100);
+    }, [campaign]);
+
+    const handleManualSubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            campaignId: id,
+            donorId: user ? user.id : null,
+            amount: Number(formData.amount),
+            isAnnonymous: formData.isAnonymous,
+            // If the user name is provided manually, we might want to handle it (backend allows donorId: null)
+        };
+
+        try {
+            const response = await fetchData(createDonation, payload);
+            if (response.newDonation) {
+                setFormData({ name: '', amount: '', isAnonymous: false });
+                loadCampaignData(); // Refresh totals
+                loadDonations(1); // Refresh donor list
+                alert('Donation recorded successfully!');
+            }
+        } catch (err) {
+            console.error('Failed to record donation:', err);
+        }
+    };
+
+    const filteredDonors = useMemo(() => {
+        // Backend filtering for donor name is not yet implemented, doing simple local filter for current page
+        return donors.filter(d => (d.donorId?.name || 'Anonymous').toLowerCase().includes(donorFilter.toLowerCase()));
+    }, [donors, donorFilter]);
+
+    if (loading && !campaign) return <div className="container">Loading Campaign...</div>;
+    if (!campaign) return <div className="container">Campaign not found.</div>;
 
     return (
         <div className="container campaign-detail-container">
+            {error && <div className="api-error-banner" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+
             <section className="campaign-info-card">
-                <div className="campaign-badge">{CAMPAIGN_DATA.status}</div>
-                <h1 className="campaign-title-large">{CAMPAIGN_DATA.title}</h1>
-                <p className="campaign-desc-text">{CAMPAIGN_DATA.description}</p>
+                <div className="campaign-badge">{campaign.status}</div>
+                <h1 className="campaign-title-large">{campaign.title}</h1>
+                <p className="campaign-desc-text">{campaign.description}</p>
 
                 <div className="stats-grid">
                     <div className="stat-item">
                         <span className="stat-label">Total Raised</span>
-                        <span className="stat-value highlight">{CAMPAIGN_DATA.raised.toLocaleString()} ETB</span>
+                        <span className="stat-value highlight">{(campaign.raisedAmount || 0).toLocaleString()} <small>ETB</small></span>
                     </div>
                     <div className="stat-item">
                         <span className="stat-label">Target Goal</span>
-                        <span className="stat-value">{CAMPAIGN_DATA.target.toLocaleString()} ETB</span>
+                        <span className="stat-value">{(campaign.targetAmount || 0).toLocaleString()} <small>ETB</small></span>
                     </div>
                 </div>
 
@@ -83,9 +109,16 @@ const CampaignDetail = () => {
                     <div className="custom-progress">
                         <div className="custom-progress-inner" style={{ width: `${progress}%` }}></div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#6b7280' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#6b7280', marginTop: '0.5rem' }}>
                         <span>{progress.toFixed(1)}% Completed</span>
-                        <span>By {CAMPAIGN_DATA.organizer}</span>
+                        {campaign.ngo && (
+                            <div className="ngo-mini-profile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span style={{ fontWeight: 600, color: 'var(--primary-green)' }}>Organized by {campaign.ngo.ngoName}</span>
+                                {campaign.ngo.bannerImage && (
+                                    <img src={campaign.ngo.bannerImage} alt="NGO Banner" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #eef2f0' }} />
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
@@ -98,11 +131,11 @@ const CampaignDetail = () => {
                             <label>Donor Identity</label>
                             <input
                                 type="text"
-                                placeholder="Donor Full Name"
-                                value={formData.name}
+                                placeholder={user ? user.name : "Guest"}
+                                value={user ? user.name : formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                disabled={formData.isAnonymous}
-                                required={!formData.isAnonymous}
+                                disabled={formData.isAnonymous || !!user}
+                                required={!formData.isAnonymous && !user}
                             />
                         </div>
                         <div className="checkbox-row">
@@ -125,8 +158,8 @@ const CampaignDetail = () => {
                                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                             />
                         </div>
-                        <button type="submit" className="primary-button">
-                            Confirm & Record
+                        <button type="submit" className="primary-button" disabled={loading}>
+                            {loading ? 'Processing...' : 'Confirm & Record'}
                         </button>
                     </form>
                 </section>
@@ -137,45 +170,47 @@ const CampaignDetail = () => {
                         <input
                             type="text"
                             className="donor-filter-input"
-                            placeholder="Search donors..."
+                            placeholder="Filter active list..."
                             value={donorFilter}
-                            onChange={(e) => { setDonorFilter(e.target.value); setPage(1); }}
+                            onChange={(e) => setDonorFilter(e.target.value)}
                         />
                     </div>
 
                     <ul className="donors-ul">
-                        {paginatedDonors.map(donor => (
-                            <li key={donor.id} className="donor-li">
+                        {filteredDonors.map(donor => (
+                            <li key={donor._id} className="donor-li">
                                 <div className="donor-main-info">
-                                    <span className="donor-name-text">{donor.name}</span>
-                                    <span className="donor-date-text">{new Date(donor.date).toDateString()}</span>
+                                    <span className="donor-name-text">
+                                        {donor.isAnnonymous ? 'Anonymous' : (donor.donorId?.name || 'Guest Donor')}
+                                    </span>
+                                    <span className="donor-date-text">{new Date(donor.createdAt).toDateString()}</span>
                                 </div>
                                 <span className="donor-amount-text">
                                     {donor.amount.toLocaleString()} <small>ETB</small>
                                 </span>
                             </li>
                         ))}
-                        {paginatedDonors.length === 0 && (
+                        {filteredDonors.length === 0 && (
                             <li style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>
                                 No donors found matching "{donorFilter}"
                             </li>
                         )}
                     </ul>
 
-                    {totalPages > 1 && (
+                    {pagination.totalPages > 1 && (
                         <div className="pagination-footer">
                             <button
                                 className="pg-btn"
-                                disabled={page === 1}
-                                onClick={() => setPage(page - 1)}
+                                disabled={pagination.currentPage === 1}
+                                onClick={() => loadDonations(pagination.currentPage - 1)}
                             >
                                 Previous
                             </button>
-                            <span className="pg-info">Page {page} of {totalPages}</span>
+                            <span className="pg-info">Page {pagination.currentPage} of {pagination.totalPages}</span>
                             <button
                                 className="pg-btn"
-                                disabled={page === totalPages}
-                                onClick={() => setPage(page + 1)}
+                                disabled={pagination.currentPage === pagination.totalPages}
+                                onClick={() => loadDonations(pagination.currentPage + 1)}
                             >
                                 Next
                             </button>

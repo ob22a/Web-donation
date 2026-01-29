@@ -1,11 +1,9 @@
 import jwt from "jsonwebtoken";
 import { sendJson } from "../utils/response.js";
 
-/**
- * Auth middleware for Node-only architecture
- * Returns true if authenticated, false otherwise
- */
+
 export function auth(req, res) {
+  if (req.method === "OPTIONS") return true;
   const cookieHeader = req.headers.cookie || "";
   let token = cookieHeader
     .split("; ")

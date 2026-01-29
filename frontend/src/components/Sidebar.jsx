@@ -15,19 +15,27 @@ const Sidebar = ({ isOpen, onToggleDrawer }) => {
                 </button>
                 <div className="drawer-content">
                     <div className="drawer-profile-card">
-                        <div className="drawer-avatar">
-                            {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
-                        </div>
-                        <h3>{user?.name}</h3>
+                        <NavLink to="/profile" className="drawer-avatar" onClick={onToggleDrawer} style={{ textDecoration: 'none', overflow: 'hidden' }}>
+                            {user?.profilePicture ? (
+                                <img src={user.profilePicture} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                user?.name?.split(' ').map(n => n[0]).join('') || 'U'
+                            )}
+                        </NavLink>
+                        <h3>
+                            <NavLink to="/profile" onClick={onToggleDrawer} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                {user?.name}
+                            </NavLink>
+                        </h3>
                         <p>{user?.role === 'donor' ? 'Donor Account' : 'NGO Account'}</p>
-                        <button type="button" className="drawer-link">View profile</button>
+                        <NavLink to="/profile" className="drawer-link" onClick={onToggleDrawer}>View profile</NavLink>
                     </div>
 
                     <div className="drawer-links">
-                        <NavLink to="/donor-dashboard" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Dashboard</NavLink>
+                        <NavLink to={user?.role === 'ngo' ? '/dashboard' : '/donor-dashboard'} className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Dashboard</NavLink>
                         <NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Edit Profile</NavLink>
-                        <NavLink to="#" onClick={(e) => e.preventDefault()}>Settings</NavLink>
-                        <NavLink to="/donations" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>My Donations</NavLink>
+                        {/* <NavLink to="#" onClick={(e) => e.preventDefault()}>Settings</NavLink> */}
+                        {/* <NavLink to="#" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>My Donations</NavLink> */}
                         {/* <Link to="/notifications">Notifications</Link> */}
                         <button type="button">Theme 🌞/🌙</button>
                         {/* <Link to="#">Need help?</Link> */}

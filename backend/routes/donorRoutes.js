@@ -2,20 +2,11 @@ import { getDonor, updateDonor, uploadProfilePicture } from '../controllers/dono
 import { auth } from '../middleware/authMiddleware.js';
 
 export default async function donorRoutes(req, res, pathname) {
-  const segments = pathname.split("/").filter(Boolean);
-
   // GET /api/donor/:id
-  if (req.method === "GET" && segments[0] === "api" && segments[1] === "donor" && segments[2]) {
-    if (!auth(req, res)) return true;
-    req.params = { id: segments[2] };
-    await getDonor(req, res);
-    return true;
-  }
 
-  // PATCH /api/donor/update/:id
-  if (req.method === "PATCH" && segments[0] === "api" && segments[1] === "donor" && segments[2] === "update" && segments[3]) {
+  // PATCH /api/donor/update/
+  if (req.method === "PATCH" && pathname === "/api/donor/update/") {
     if (!auth(req, res)) return true;
-    req.params = { id: segments[3] };
     await updateDonor(req, res);
     return true;
   }
@@ -23,7 +14,8 @@ export default async function donorRoutes(req, res, pathname) {
   // POST /api/donor/profile-picture/:id
   if (req.method === "POST" && pathname.startsWith("/api/donor/profile-picture/")) {
     if (!auth(req, res)) return true;
-    req.params = { id: segments[3] }; // last segment
+    const segments = pathname.split("/").filter(Boolean);
+    req.params = { id: segments.at(-1) }; // last segment
     await uploadProfilePicture(req, res);
     return true;
   }

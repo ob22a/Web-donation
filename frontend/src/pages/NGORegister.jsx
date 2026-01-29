@@ -1,16 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {useAuth} from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext';
+import useFetch from '../hooks/useFetch';
+import { registerUser } from '../apis/auth';
 import '../style/register.css';
 
 const NGORegister = () => {
-    const { login } = useAuth();
     const navigate = useNavigate();
+    const { login } = useAuth();
+    const { loading, error, fetchData } = useFetch();
 
-    const handleSubmit = (e) => {
+    const [form, setForm] = useState({
+        name: '',
+        email: '',
+        password: '',
+        role: 'ngo'
+    });
+
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        login('ngo');
-        navigate('/ngo-profile-setup'); // Leads to filling info
+        try {
+            const response = await fetchData(registerUser, form);
+            if (response.user) {
+                login(response.user);
+                navigate('/ngo-profile-setup');
+            }
+        } catch (err) {
+            console.error('NGO Registration error:', err);
+        }
     };
 
     return (
@@ -18,20 +39,22 @@ const NGORegister = () => {
             <div className="auth-section">
                 <form className="auth-card" onSubmit={handleSubmit}>
                     <h2 className="auth-title">NGO Registration</h2>
+                    {error && <div className="api-error-banner" style={{ color: 'red', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
+
                     <div>
-                        <label>NGO Name</label>
-                        <input required type="text" placeholder="Official Registered Name" />
+                        <label htmlFor="name">Contact Name</label>
+                        <input id="name" name="name" required type="text" placeholder="Full Name" value={form.name} onChange={handleChange} />
                     </div>
                     <div>
-                        <label>Email</label>
-                        <input required type="email" placeholder="contact@ngo.org" />
+                        <label htmlFor="email">Email</label>
+                        <input id="email" name="email" required type="email" placeholder="contact@ngo.org" value={form.email} onChange={handleChange} />
                     </div>
                     <div>
-                        <label>Password</label>
-                        <input required type="password" placeholder="••••••••" />
+                        <label htmlFor="password">Password</label>
+                        <input id="password" name="password" required type="password" placeholder="••••••••" value={form.password} onChange={handleChange} />
                     </div>
-                    <button type="submit" className="primary-button">
-                        Register NGO
+                    <button type="submit" className="primary-button" disabled={loading}>
+                        {loading ? 'Creating Account...' : 'Register NGO'}
                     </button>
                     <div className="auth-secondary-action">
                         <span>Already have an account?</span>

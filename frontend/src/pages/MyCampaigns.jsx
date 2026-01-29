@@ -1,64 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import useFetch from '../hooks/useFetch';
+import { getCampaigns, createCampaign } from '../apis/campaigns';
 import Toast from '../components/Toast';
 import '../style/mycampaigns.css';
 
-const INITIAL_CAMPAIGNS = [
-    {
-        id: 123,
-        title: "Education for 100 Children",
-        status: "active",
-        description: "Our goal is to provide school supplies and tuition fees for 100 underprivileged children this semester.",
-        raised: 60000,
-        target: 100000,
-        progress: 60
-    },
-    {
-        id: 456,
-        title: "Clean Water Initiative - Phase I",
-        status: "completed",
-        description: "We successfully built a new well and distribution system in the rural community of Arba Minch.",
-        raised: 250000,
-        target: 200000,
-        progress: 100
-    }
-];
-
 const MyCampaigns = () => {
-    const [campaigns, setCampaigns] = useState(INITIAL_CAMPAIGNS);
+    const { loading, error, fetchData } = useFetch();
+    const [campaigns, setCampaigns] = useState([]);
     const [filter, setFilter] = useState('All');
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
         document.body.className = 'page-my-campaigns';
+        const loadCampaigns = async () => {
+            try {
+                const response = await fetchData(getCampaigns);
+                if (response.campaigns) {
+                    setCampaigns(response.campaigns);
+                }
+            } catch (err) {
+                console.error('Failed to load campaigns:', err);
+            }
+        };
+        loadCampaigns();
         return () => { document.body.className = ''; };
-    }, []);
+    }, [fetchData]);
 
     const filteredCampaigns = campaigns.filter(c =>
-        filter === 'All' ? true : c.status === filter.toLowerCase()
+        filter === 'All' ? true : c.status?.toLowerCase() === filter.toLowerCase()
     );
 
-    const handleCreate = (e) => {
+    const handleCreate = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const newCampaign = {
-            id: Date.now(),
+        const payload = {
             title: formData.get('title'),
             description: formData.get('description'),
-            target: Number(formData.get('target')),
-            raised: Number(formData.get('raised')) || 0,
-            status: formData.get('status'),
-            progress: Math.min((Number(formData.get('raised')) / Number(formData.get('target'))) * 100, 100) || 0
+            targetAmount: Number(formData.get('targetAmount')),
+            raisedAmount: Number(formData.get('raisedAmount')) || 0,
+            status: formData.get('status')
         };
-        setCampaigns([newCampaign, ...campaigns]);
-        setIsCreateOpen(false);
-        setShowToast(true);
+
+        try {
+            const response = await fetchData(createCampaign, payload);
+            if (response.campaign) {
+                setCampaigns([response.campaign, ...campaigns]);
+                setIsCreateOpen(false);
+                setShowToast(true);
+            }
+        } catch (err) {
+            console.error('Failed to create campaign:', err);
+        }
     };
 
     return (
         <div className="container">
             {showToast && <Toast message="Campaign created successfully!" onClose={() => setShowToast(false)} />}
+            {error && <div className="api-error-banner" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
 
             <div className="header">
                 <h2 className="title">My Campaigns</h2>
@@ -85,23 +85,29 @@ const MyCampaigns = () => {
             </div>
 
             <div className="campaign-grid">
-                {filteredCampaigns.map(campaign => (
-                    <div key={campaign.id} className="campaign-card">
-                        <div className="campaign-title">{campaign.title}</div>
-                        <div className={`campaign-status ${campaign.status === 'completed' ? 'completed' : ''}`}>
-                            Status: {campaign.status}
-                        </div>
-                        <div className="campaign-description">{campaign.description}</div>
-                        <div className="progress-bar-container">
-                            <div className="progress-bar" style={{ width: `${campaign.progress}%` }}></div>
-                        </div>
-                        <div className="donation-info">
-                            <span>Raised: {campaign.raised.toLocaleString()} ETB</span>
-                            <span>Target: {campaign.target.toLocaleString()} ETB</span>
-                        </div>
-                        <Link to={`/campaign/${campaign.id}`} className="view-button">View</Link>
-                    </div>
-                ))}
+                {loading && campaigns.length === 0 ? <p>Loading campaigns...</p> :
+                    filteredCampaigns.length > 0 ? filteredCampaigns.map(campaign => {
+                        const progress = campaign.targetAmount > 0
+                            ? Math.min(100, (campaign.raisedAmount / campaign.targetAmount) * 100)
+                            : 0;
+                        return (
+                            <div key={campaign._id} className="campaign-card">
+                                <div className="campaign-title">{campaign.title}</div>
+                                <div className={`campaign-status ${campaign.status === 'completed' ? 'completed' : ''}`}>
+                                    Status: {campaign.status}
+                                </div>
+                                <div className="campaign-description">{campaign.description}</div>
+                                <div className="progress-bar-container">
+                                    <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+                                </div>
+                                <div className="donation-info">
+                                    <span>Raised: {(campaign.raisedAmount || 0).toLocaleString()} ETB</span>
+                                    <span>Target: {(campaign.targetAmount || 0).toLocaleString()} ETB</span>
+                                </div>
+                                <Link to={`/campaign/${campaign._id}`} className="view-button">View</Link>
+                            </div>
+                        );
+                    }) : <p>No campaigns found.</p>}
             </div>
 
             {/* Create Campaign Modal */}
@@ -124,12 +130,12 @@ const MyCampaigns = () => {
 
                             <label>
                                 Target Amount (ETB)
-                                <input type="number" name="target" required min="1" placeholder="e.g. 100000" />
+                                <input type="number" name="targetAmount" required min="1" placeholder="e.g. 100000" />
                             </label>
 
                             <label>
                                 Initial Raised (ETB)
-                                <input type="number" name="raised" min="0" defaultValue="0" />
+                                <input type="number" name="raisedAmount" min="0" defaultValue="0" />
                             </label>
 
                             <label>
@@ -144,8 +150,8 @@ const MyCampaigns = () => {
                                 <button type="button" className="modal-close-button" onClick={() => setIsCreateOpen(false)} style={{ flex: 1 }}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="modal-submit-button" style={{ flex: 2 }}>
-                                    Create Campaign
+                                <button type="submit" className="modal-submit-button" style={{ flex: 2 }} disabled={loading}>
+                                    {loading ? 'Creating...' : 'Create Campaign'}
                                 </button>
                             </div>
                         </form>
