@@ -1,9 +1,6 @@
 /**
- * Utility function to send JSON responses with consistent formatting.
- * 
- * Why this utility: Centralizes response handling to ensure consistent
- * Content-Type headers and prevent double-sending responses (headersSent check).
- * Also handles cookie setting in a unified way.
+ * This is a function that helps us send json response and avoid redundancy
+ * It also prevents sending twice by checking if res.headersSent is truthy
  * 
  * @param {http.ServerResponse} res - The HTTP response object
  * @param {number} status - HTTP status code
@@ -11,13 +8,11 @@
  * @param {string[]} cookies - Array of cookie strings to set (optional)
  */
 export function sendJson(res, status, data, cookies = []) {
-  // Prevent double-sending: if headers already sent, ignore this call
-  // This can happen if multiple code paths try to send a response
   if (res.headersSent) return;
 
   res.setHeader("Content-Type", "application/json");
 
-  // Set cookies if provided (used for authentication tokens)
+  // used for authentication tokens
   if (cookies.length) {
     res.setHeader("Set-Cookie", cookies);
   }

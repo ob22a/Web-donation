@@ -9,7 +9,6 @@ const ngoSchema = new mongoose.Schema({
   bannerImage: { type: String },
 });
 
-// Discriminator
 const NGO = User.discriminator("ngo", ngoSchema);
 
 export default NGO;

@@ -9,20 +9,6 @@ import { sendJson } from "../utils/response.js";
 import { createAuthCookie } from "../utils/authCookies.js";
 import cloudinary from "../config/cloudinary.js";
 
-/**
- * User login handler.
- * 
- * Flow:
- * 1. Validate email and password are provided
- * 2. Find user by email in User collection
- * 3. Compare provided password with hashed password using bcrypt
- * 4. Generate JWT token with user info (userId, name, email, role)
- * 5. Set token in HttpOnly cookie for security
- * 6. Return user data (without password)
- * 
- * Security: Passwords are hashed using bcrypt. Tokens are stored in
- * HttpOnly cookies to prevent XSS attacks.
- */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -32,17 +18,14 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      // ✅ Email does not exist
       return sendJson(res, 404, { message: "Email not found" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      // ✅ Email exists, but wrong password
       return sendJson(res, 401, { message: "Incorrect password" });
     }
 
-    // Fetch role-specific user document to include all fields (like ngoName or badges)
     let fullUser;
     if (user.role === 'donor') {
       fullUser = await Donor.findById(user._id).select('-password');
@@ -62,7 +45,7 @@ export const login = async (req, res) => {
 
     const cookie = createAuthCookie(token);
 
-    const userObj = fullUser.toObject({ virtuals: true });
+    const userObj = fullUser.toObject();
     delete userObj.password;
 
     sendJson(res, 200, {
@@ -77,25 +60,6 @@ export const login = async (req, res) => {
   }
 };
 
-/**
- * User registration handler (handles both donor and NGO registration).
- * 
- * Architecture: Both donors and NGOs are stored in the User collection initially.
- * After registration, role-specific data is stored in Donor or NGO collections
- * when users complete their profiles.
- * 
- * Flow:
- * 1. Validate all required fields (name, email, password, role)
- * 2. Validate role is either "donor" or "ngo"
- * 3. Check if email already exists
- * 4. Hash password with bcrypt (10 rounds)
- * 5. Create new User document
- * 6. Generate JWT token and set cookie
- * 7. Return user data
- * 
- * Why auto-login after registration: Better UX - users don't need to
- * manually log in after creating an account.
- */
 export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -106,7 +70,6 @@ export const register = async (req, res) => {
     if (!["donor", "ngo"].includes(role)) {
       return sendJson(res, 400, { message: "Invalid role" });
     }
-
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -123,13 +86,9 @@ export const register = async (req, res) => {
 
     await user.save();
 
-    // Option A: just return userId
-    // res.status(201).json({ message: "Registration successful", userId: user._id });
-
-    // Option B (recommended): create a JWT and return it + userId so frontend can be logged in immediately
     const token = jwt.sign(
       { userId: user._id, role: user.role, email: user.email },
-      process.env.JWT_SECRET || "secretkey",
+      process.env.JWT_SECRET || "supasecretkey",
       { expiresIn: "7d" }
     );
 
@@ -150,17 +109,6 @@ export const register = async (req, res) => {
   }
 };
 
-/**
- * Get user profile handler.
- * 
- * Architecture: Returns role-specific profile data. For donors, fetches from
- * Donor collection; for NGOs, fetches from NGO collection. Both collections
- * extend the base User model with role-specific fields.
- * 
- * Why separate collections: Donors and NGOs have different data structures
- * (e.g., donors have paymentMethods/preferences, NGOs have ngoName/category).
- * Using separate collections allows for proper schema validation and indexing.
- */
 export const getProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -171,7 +119,7 @@ export const getProfile = async (req, res) => {
 
     if (!user) return sendJson(res, 404, { message: 'User not found' });
 
-    const userObj = user.toObject({ virtuals: true });
+    const userObj = user.toObject();
     delete userObj.password;
 
     sendJson(res, 200, {
@@ -186,50 +134,22 @@ export const getProfile = async (req, res) => {
   }
 }
 
-/**
- * User logout handler.
- * 
- * Security: Clears the authentication cookie by setting Max-Age=0.
- * The cookie name, path, and flags must match the original cookie
- * set during login for proper deletion.
- */
+
 export const logout = async (req, res) => {
   try {
-    // Remove auth cookie by setting Max-Age=0 (immediate expiration)
-    // All flags (HttpOnly, Path, SameSite) must match original cookie
-    res.setHeader(
-      "Set-Cookie",
-      "token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict"
-    );
-    sendJson(res, 200, { message: 'Logged out successfully' });
+    sendJson(res, 200, { message: 'Logged out successfully' }, ["token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict"]);
   } catch (err) {
     console.error(err);
     sendJson(res, 500, { message: 'Server error' });
   }
 }
 
-/**
- * Update user profile handler.
- * 
- * Architecture: Handles updates for both donors and NGOs with role-specific
- * field validation. Updates are applied incrementally - only fields present
- * in the request body are updated.
- * 
- * Update categories:
- * 1. General fields: Common to both roles (name, profilePicture, etc.)
- * 2. Role-specific fields: Donor (preferences, paymentMethods) or NGO (ngoName, category, etc.)
- * 3. Password: Requires old password verification before updating
- * 
- * Security: Password updates require old password verification to prevent
- * unauthorized changes. New password is hashed before storage.
- */
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
     const role = req.user.role;
     const data = req.body;
 
-    // Fetch role-specific user document
     let user;
     if (role === "donor") {
       user = await Donor.findById(userId);
@@ -239,20 +159,18 @@ export const updateProfile = async (req, res) => {
 
     if (!user) return sendJson(res, 404, { message: "User not found" });
 
-    // 1. General Fields (Common to both roles)
-    // Only update fields that are explicitly provided (undefined check)
+    // General Fileds 
     const generalFields = ["name", "profilePicture", "secondaryEmail", "phoneNumber", "city", "country"];
     generalFields.forEach((field) => {
       if (data[field] !== undefined) user[field] = data[field];
     });
 
-    // 2. Role-specific Fields
+    // Role specific Fields
     if (role === "donor") {
-      // Merge preferences object (preserves existing preferences not in update)
       if (data.preference) {
         user.preference = { ...user.preference, ...data.preference };
       }
-      // Why: Syncs persistent recurring donation data with the donor's profile.
+
       if (data.recurringDonation) {
         user.recurringDonation = { ...user.recurringDonation, ...data.recurringDonation };
       }

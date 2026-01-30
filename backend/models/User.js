@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["donor", "ngo"], default: "donor" },
     profilePicture: { type: String },
-    // Common profile fields for both donors and NGOs
     phoneNumber: { type: String },
     city: { type: String },
     country: { type: String },

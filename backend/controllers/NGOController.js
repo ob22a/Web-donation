@@ -74,8 +74,6 @@ export const uploadNgoBanner = async (req, res) => {
         return sendJson(res, 404, { message: "NGO not found" });
       }
 
-      if (req.user?.userId !== ngo._id.toString()) return sendJson(res, 403, { message: "Forbidden" });
-
       const file = Array.isArray(files.bannerImage) ? files.bannerImage[0] : files.bannerImage;
       if (!file) return sendJson(res, 400, { message: "No banner image provided" });
 
