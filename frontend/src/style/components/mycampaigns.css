@@ -85,12 +85,13 @@ body.page-my-campaigns {
 }
 .page-my-campaigns .filter-button {
   background: transparent;
-  border: 1px solid #e6f2ea;
-  color: var(--primary-green);
+  border: 1px solid #e5e7eb; /* Standard gray stroke from profile.css */
+  color: #6b7280;
   padding: 0.4rem 0.75rem;
   border-radius: 0.5rem;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.2s;
 }
 .page-my-campaigns .filter-button.active {
   background: var(--primary-green);
@@ -198,6 +199,8 @@ body.page-my-campaigns {
   padding: 1.25rem 1.5rem;
   box-shadow: var(--shadow);
   box-sizing: border-box;
+  max-height: 550px;
+  overflow-y: scroll;
 }
 
 .create-form {
