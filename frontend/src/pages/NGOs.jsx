@@ -5,12 +5,13 @@ import useFetch from '../hooks/useFetch';
 import { getNGOs } from '../apis/ngo';
 import { getCampaignsByNgo } from '../apis/campaigns';
 import { createDonation } from '../apis/donations';
+import { updateProfile } from '../apis/profile';
 import Toast from '../components/Toast';
 import '../style/ngos-description.css';
 
 const NGOs = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, refreshProfile } = useAuth();
     const { loading, error, fetchData } = useFetch();
     const [ngos, setNgos] = useState([]);
 
@@ -63,6 +64,21 @@ const NGOs = () => {
     }, [user]);
 
     const openModal = async (ngo) => {
+        if (!user) {
+            setToastMessage("Please login to donate to this NGO.");
+            setShowToast(true);
+            setTimeout(() => navigate('/login'), 1500);
+            return;
+        }
+
+        // Only donors need a payment method check (NGOs might be testing or recorded as Guest/Manual)
+        if (user.role === 'donor' && (!user.paymentMethods || user.paymentMethods.length === 0)) {
+            setToastMessage("Please add a payment method in your profile settings before donating.");
+            setShowToast(true);
+            setTimeout(() => navigate('/profile'), 2000);
+            return;
+        }
+
         setSelectedNGO(ngo);
         setIsModalOpen(true);
         setNgoCampaigns([]);
@@ -71,9 +87,11 @@ const NGOs = () => {
         try {
             const response = await getCampaignsByNgo(ngo._id);
             if (response.campaigns) {
-                setNgoCampaigns(response.campaigns);
-                if (response.campaigns.length > 0) {
-                    setDonationData(prev => ({ ...prev, campaign: response.campaigns[0]._id }));
+                // Additional filter for 'active' just in case, though backend now handles it.
+                const activeOnes = response.campaigns.filter(c => c.status === 'active' || !c.status);
+                setNgoCampaigns(activeOnes);
+                if (activeOnes.length > 0) {
+                    setDonationData(prev => ({ ...prev, campaign: activeOnes[0]._id }));
                 }
             }
         } catch (err) {
@@ -91,15 +109,41 @@ const NGOs = () => {
         if (!selectedNGO || !donationData.campaign || !donationData.amount) return;
 
         try {
+            // ---- Data Integration: Use real user data ----
+            // Why: Replaces hardcoded placeholder payment method with the user's actual default method.
+            const defaultMethod = user?.paymentMethods?.find(m => m.isDefault) || user?.paymentMethods?.[0];
+            const methodPayload = defaultMethod ? {
+                type: defaultMethod.type,
+                identifier: defaultMethod.identifier
+            } : { type: 'Guest/Manual', identifier: 'Manual Entry' };
+
             const response = await fetchData(createDonation, {
                 campaignId: donationData.campaign,
-                donorId: user ? (user.id || user._id) : null,
+                donorId: user && user.role === 'donor' ? (user.id || user._id) : null,
+                donorName: user ? user.name : 'Guest Donor',
                 amount: Number(donationData.amount),
                 isAnnonymous: false,
-                method: { type: 'Telebirr', identifier: '**** 3921' }
+                method: methodPayload
             });
 
             if (response.newDonation) {
+                // ---- Data Integration: Sync Recurring Settings ----
+                // Why: If user opted for recurrence during donation, we save it to their profile.
+                if (donationData.isRecurrent && user) {
+                    await fetchData(updateProfile, {
+                        recurringDonation: {
+                            enabled: true,
+                            amount: Number(donationData.amount),
+                            frequency: donationData.frequency
+                        }
+                    });
+                }
+
+                // ---- Data Integration: Refresh User Stats ----
+                // Why: A donation updates donor stats on the backend. 
+                // Refreshing the profile ensures the UI displays the latest totalDonated and badges.
+                refreshProfile();
+
                 setToastMessage(`Success! You donated ${donationData.amount} ETB to ${selectedNGO.ngoName || selectedNGO.name}`);
                 setShowToast(true);
                 closeModal();
@@ -131,37 +175,67 @@ const NGOs = () => {
             </section>
 
             <section className="ngos-section">
-                {loading && ngos.length === 0 ? <p style={{ textAlign: 'center' }}>Loading NGOs...</p> :
-                    filteredNGOs.length > 0 ? (
-                        <div className="carousel-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-                            <button onClick={prevNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>◀</button>
-
-                            <article className="ngo-card" style={{ flex: 1 }}>
-                                <img
-                                    className="ngo-card-image"
-                                    src={currentNGO.bannerImage || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=400&auto=format&fit=crop"}
-                                    alt={currentNGO.ngoName || currentNGO.name}
-                                />
-                                <div className="ngo-card-body">
-                                    <h2 className="ngo-card-title">{currentNGO.ngoName || currentNGO.name}</h2>
-                                    <p className="ngo-card-description">{currentNGO.description || "No description provided."}</p>
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                                        <button
-                                            className="primary-button ngo-card-button"
-                                            style={{ flex: 1 }}
-                                            onClick={() => openModal(currentNGO)}
-                                        >
-                                            Donate
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <button onClick={nextNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>▶</button>
-                        </div>
+                {loading && ngos.length === 0 ? (
+                    <p style={{ textAlign: 'center' }}>Loading NGOs...</p>
+                ) : (
+                    // If user has typed a search query, show a grid of matching NGO cards
+                    (searchQuery && searchQuery.trim() !== '') ? (
+                        filteredNGOs.length > 0 ? (
+                            <div className="ngos-grid">
+                                {filteredNGOs.map((ngo) => (
+                                    <article key={ngo._id} className="ngo-card">
+                                        <img
+                                            className="ngo-card-image"
+                                            src={ngo.bannerImage || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=400&auto=format&fit=crop"}
+                                            alt={ngo.ngoName || ngo.name}
+                                        />
+                                        <div className="ngo-card-body">
+                                            <h2 className="ngo-card-title">{ngo.ngoName || ngo.name}</h2>
+                                            <p className="ngo-card-description">{ngo.description || "No description provided."}</p>
+                                            <div className="ngo-card-actions" style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                                                <button className="primary-button ngo-card-button" style={{ flex: 1 }} onClick={() => openModal(ngo)}>Donate</button>
+                                            </div>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        ) : (
+                            <p style={{ textAlign: 'center' }}>No NGOs found matching your search.</p>
+                        )
                     ) : (
-                        <p style={{ textAlign: 'center' }}>{searchQuery ? "No NGOs found matching your search." : "No NGOs registered yet."}</p>
-                    )}
+                        // No search query: show carousel of NGOs (as before)
+                        filteredNGOs.length > 0 ? (
+                            <div className="carousel-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', maxWidth: '600px', margin: '0 auto' }}>
+                                <button onClick={prevNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>◀</button>
+
+                                <article className="ngo-card" style={{ flex: 1 }}>
+                                    <img
+                                        className="ngo-card-image"
+                                        src={currentNGO.bannerImage || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=400&auto=format&fit=crop"}
+                                        alt={currentNGO.ngoName || currentNGO.name}
+                                    />
+                                    <div className="ngo-card-body">
+                                        <h2 className="ngo-card-title">{currentNGO.ngoName || currentNGO.name}</h2>
+                                        <p className="ngo-card-description">{currentNGO.description || "No description provided."}</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                                            <button
+                                                className="primary-button ngo-card-button"
+                                                style={{ flex: 1 }}
+                                                onClick={() => openModal(currentNGO)}
+                                            >
+                                                Donate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <button onClick={nextNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>▶</button>
+                            </div>
+                        ) : (
+                            <p style={{ textAlign: 'center' }}>{searchQuery ? "No NGOs found matching your search." : "No NGOs registered yet."}</p>
+                        )
+                    )
+                )}
             </section>
 
             {/* Donation Modal */}

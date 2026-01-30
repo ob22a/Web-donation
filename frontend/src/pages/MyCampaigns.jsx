@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import { getCampaigns, createCampaign } from '../apis/campaigns';
 import Toast from '../components/Toast';
 import '../style/mycampaigns.css';
 
+/**
+ * My Campaigns page - displays and manages campaigns for authenticated NGO.
+ * 
+ * Architecture: Lists all campaigns created by the logged-in NGO with filtering
+ * by status. Allows creating new campaigns via modal form.
+ * 
+ * Performance optimizations:
+ * - useCallback for event handlers
+ * - useMemo for filtered campaigns list
+ * - Proper useEffect dependencies
+ */
 const MyCampaigns = () => {
     const { loading, error, fetchData } = useFetch();
     const [campaigns, setCampaigns] = useState([]);
@@ -12,27 +23,47 @@ const MyCampaigns = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
-    useEffect(() => {
-        document.body.className = 'page-my-campaigns';
-        const loadCampaigns = async () => {
-            try {
-                const response = await fetchData(getCampaigns);
-                if (response.campaigns) {
-                    setCampaigns(response.campaigns);
-                }
-            } catch (err) {
-                console.error('Failed to load campaigns:', err);
+    /**
+     * Load campaigns from API.
+     * 
+     * Why useCallback: Used in useEffect. Memoization prevents effect from
+     * re-running unnecessarily when component re-renders.
+     */
+    const loadCampaigns = useCallback(async () => {
+        try {
+            const response = await fetchData(getCampaigns);
+            if (response.campaigns) {
+                setCampaigns(response.campaigns);
             }
-        };
-        loadCampaigns();
-        return () => { document.body.className = ''; };
+        } catch (err) {
+            console.error('Failed to load campaigns:', err);
+        }
     }, [fetchData]);
 
-    const filteredCampaigns = campaigns.filter(c =>
-        filter === 'All' ? true : c.status?.toLowerCase() === filter.toLowerCase()
-    );
+    useEffect(() => {
+        document.body.className = 'page-my-campaigns';
+        loadCampaigns();
+        return () => { document.body.className = ''; };
+    }, [loadCampaigns]); // Depend on memoized loadCampaigns
 
-    const handleCreate = async (e) => {
+    /**
+     * Filter campaigns by status.
+     * 
+     * Why useMemo: Filtering runs on every render when campaigns or filter changes.
+     * Memoization prevents unnecessary re-filtering when other state updates.
+     */
+    const filteredCampaigns = useMemo(() => {
+        return campaigns.filter(c =>
+            filter === 'All' ? true : c.status?.toLowerCase() === filter.toLowerCase()
+        );
+    }, [campaigns, filter]);
+
+    /**
+     * Handle campaign creation.
+     * 
+     * Why useCallback: Used in form onSubmit. Prevents unnecessary re-renders.
+     */
+    const handleCreate = useCallback(async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const payload = {
@@ -46,27 +77,48 @@ const MyCampaigns = () => {
         try {
             const response = await fetchData(createCampaign, payload);
             if (response.campaign) {
-                setCampaigns([response.campaign, ...campaigns]);
+                setCampaigns(prev => [response.campaign, ...prev]);
                 setIsCreateOpen(false);
                 setShowToast(true);
             }
         } catch (err) {
             console.error('Failed to create campaign:', err);
         }
-    };
+    }, [fetchData]);
+
+    // Memoize handlers to prevent unnecessary re-renders
+    const handleCloseToast = useCallback(() => {
+        setShowToast(false);
+    }, []);
+
+    const handleOpenCreate = useCallback(() => {
+        setIsCreateOpen(true);
+    }, []);
+
+    const handleCloseCreate = useCallback(() => {
+        setIsCreateOpen(false);
+    }, []);
+
+    // Extract inline styles to prevent object recreation
+    const errorBannerStyle = { color: 'red', marginBottom: '1rem', textAlign: 'center' };
+    const createButtonStyle = { width: 'auto', paddingInline: '1.5rem', margin: 0 };
+    const modalTitleStyle = { color: 'var(--primary-green)', marginBottom: '1.5rem', textAlign: 'center' };
+    const modalActionsStyle = { display: 'flex', gap: '1rem', marginTop: '1rem' };
+    const buttonFlex1Style = { flex: 1 };
+    const buttonFlex2Style = { flex: 2 };
 
     return (
         <div className="container">
-            {showToast && <Toast message="Campaign created successfully!" onClose={() => setShowToast(false)} />}
-            {error && <div className="api-error-banner" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
+            {showToast && <Toast message="Campaign created successfully!" onClose={handleCloseToast} />}
+            {error && <div className="api-error-banner" style={errorBannerStyle}>{error}</div>}
 
             <div className="header">
                 <h2 className="title">My Campaigns</h2>
 
                 <button
                     className="primary-button"
-                    style={{ width: 'auto', paddingInline: '1.5rem', margin: 0 }}
-                    onClick={() => setIsCreateOpen(true)}
+                    style={createButtonStyle}
+                    onClick={handleOpenCreate}
                 >
                     + Create Campaign
                 </button>
@@ -112,9 +164,9 @@ const MyCampaigns = () => {
 
             {/* Create Campaign Modal */}
             {isCreateOpen && (
-                <div className="modal-overlay open" onClick={() => setIsCreateOpen(false)}>
+                <div className="modal-overlay open" onClick={handleCloseCreate}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <h2 className="dashboard-title" style={{ color: 'var(--primary-green)', marginBottom: '1.5rem', textAlign: 'center' }}>
+                        <h2 className="dashboard-title" style={modalTitleStyle}>
                             Create New Campaign
                         </h2>
                         <form className="create-form" onSubmit={handleCreate}>
@@ -146,11 +198,11 @@ const MyCampaigns = () => {
                                 </select>
                             </label>
 
-                            <div className="modal-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                <button type="button" className="modal-close-button" onClick={() => setIsCreateOpen(false)} style={{ flex: 1 }}>
+                            <div className="modal-actions" style={modalActionsStyle}>
+                                <button type="button" className="modal-close-button" onClick={handleCloseCreate} style={buttonFlex1Style}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="modal-submit-button" style={{ flex: 2 }} disabled={loading}>
+                                <button type="submit" className="modal-submit-button" style={buttonFlex2Style} disabled={loading}>
                                     {loading ? 'Creating...' : 'Create Campaign'}
                                 </button>
                             </div>

@@ -6,73 +6,74 @@ import {
   getNGODonations,
   emailDonationReceipt,
   getDonationReceiptStatus,
-  bulkEmailReceipts,
 } from "../controllers/donationController.js";
 import { auth } from "../middleware/authMiddleware.js";
 
 export default async function donationRoutes(req, res, pathname) {
-  // Helper function to extract ID from URL
-  const getPathSegments = () => pathname.split("/").filter((seg) => seg);
+  const segments = pathname.split("/").filter(Boolean);
 
+  // GET /api/donations/my
   if (pathname === "/api/donations/my" && req.method === "GET") {
     if (!auth(req, res)) return false;
     await getMyDonations(req, res);
     return true;
-  } else if (pathname === "/api/donations/ngo" && req.method === "GET") {
+  }
+
+  // GET /api/donations/ngo
+  if (pathname === "/api/donations/ngo" && req.method === "GET") {
     if (!auth(req, res)) return false;
     await getNGODonations(req, res);
     return true;
-  } else if (pathname === "/api/donations" && req.method === "POST") {
-    // Optional auth: donors might want to donate anonymously or logged out?
+  }
+
+  // POST /api/donations
+  if (pathname === "/api/donations" && req.method === "POST") {
     await createDonation(req, res);
     return true;
-  } else if (
-    pathname === "/api/donations/bulk-receipts" &&
+  }
+
+  // POST /api/donations/:donationId/email
+  if (
+    segments.length === 4 &&
+    segments[0] === "api" &&
+    segments[1] === "donations" &&
+    segments[3] === "email" &&
     req.method === "POST"
   ) {
-    // Bulk send receipts (for NGO admins/platform admins)
     if (!auth(req, res)) return false;
-    await bulkEmailReceipts(req, res);
-    return true;
-  } else if (
-    pathname.startsWith("/api/donations/") &&
-    pathname.endsWith("/email") &&
-    req.method === "POST"
-  ) {
-    // Send receipt for specific donation
-    // Path: /api/donations/:donationId/email
-    if (!auth(req, res)) return false;
+
+    req.params = { donationId: segments[2] };
     await emailDonationReceipt(req, res);
     return true;
-  } else if (
-    pathname.startsWith("/api/donations/") &&
-    pathname.endsWith("/receipt-status") &&
+  }
+
+  // GET /api/donations/:donationId/receipt-status
+  if (
+    segments.length === 4 &&
+    segments[0] === "api" &&
+    segments[1] === "donations" &&
+    segments[3] === "receipt-status" &&
     req.method === "GET"
   ) {
-    // Get receipt status for specific donation
-    // Path: /api/donations/:donationId/receipt-status
     if (!auth(req, res)) return false;
+
+    req.params = { donationId: segments[2] };
     await getDonationReceiptStatus(req, res);
     return true;
-  } else if (
-    pathname.startsWith("/api/donations/campaign/") &&
+  }
+
+  // GET /api/donations/campaign/:campaignId
+  if (
+    segments.length === 4 &&
+    segments[0] === "api" &&
+    segments[1] === "donations" &&
+    segments[2] === "campaign" &&
     req.method === "GET"
   ) {
-    // Get donations by campaign
-    // Path: /api/donations/campaign/:campaignId
-    const segments = getPathSegments();
-    if (segments.length === 4 && segments[2] === "campaign") {
-      await getDonationsByCampaign(req, res);
-      return true;
-    }
-  } else if (pathname.startsWith("/api/donations/") && req.method === "GET") {
-    // Get specific donation details
-    // Path: /api/donations/:donationId
-    const segments = getPathSegments();
-    if (segments.length === 3) {
-      // You could add a getDonationById function here
-      return false; // Not implemented yet
-    }
+    req.params = { campaignId: segments[3] };
+    await getDonationsByCampaign(req, res);
+    return true;
   }
+
   return false;
 }

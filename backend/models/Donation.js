@@ -7,16 +7,44 @@ const donationSchema = new mongoose.Schema(
       ref: "Campaign",
       required: true,
     },
-    donorId: { type: mongoose.Schema.Types.ObjectId, ref: "Donor" }, // I removed required to allow manual donations
-    amount: { type: Number, required: true },
-    isAnnonymous: { type: Boolean, default: false },
-    isManual: { type: Boolean, default: false },
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Donor",
+    }, // I removed required to allow manual donations
+    /**
+     * donorName: Stores the display name for manual or guest donations.
+     * Why: Allows NGOs to record names for offline donors while maintaining a null donorId.
+     */
+    donorName: {
+      type: String,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    isAnnonymous: {
+      type: Boolean,
+      default: false,
+    },
+    isManual: {
+      type: Boolean,
+      default: false,
+    },
     // Whether a receipt email has been sent to the donor
-    receiptEmailSent: { type: Boolean, default: false },
-    receiptSentAt: { type: Date },
+    receiptEmailSent: {
+      type: Boolean,
+      default: false,
+    },
+    receiptSentAt: {
+      type: Date,
+    },
     method: {
-      type: { type: String },
-      identifier: { type: String },
+      type: {
+        type: String,
+      },
+      identifier: {
+        type: String,
+      },
     },
   },
   { timestamps: true },

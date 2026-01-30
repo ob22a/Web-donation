@@ -1,9 +1,16 @@
-// Biruktie you might add more controllers based on the functionalities from the donor 
-
 import Campaign from "../models/Campaign.js";
 import NGO from "../models/NGO.js";
 import { sendJson } from "../utils/response.js";
 
+/**
+ * Create a new campaign.
+ * 
+ * Architecture: Campaigns are created by authenticated NGOs. The NGO ID
+ * is extracted from the JWT token (req.user.userId) set by auth middleware.
+ * 
+ * Required fields: title, description, targetAmount, initialAmount, status
+ * The ngo field is automatically set from the authenticated user.
+ */
 export async function createCampaign(req, res) {
     try {
         const data = req.body;
@@ -21,6 +28,16 @@ export async function createCampaign(req, res) {
     }
 }
 
+/**
+ * Get all campaigns for the authenticated NGO.
+ * 
+ * Architecture: Returns campaigns created by the logged-in NGO.
+ * Uses populate to include NGO name and banner image for display.
+ * 
+ * Note: Campaign.ngo references 'User' model (not 'NGO') because NGO is a discriminator.
+ * When populating, Mongoose automatically includes discriminator-specific fields
+ * (like ngoName, bannerImage) from the NGO discriminator documents.
+ */
 export async function getCampaignsByNGO(req, res) {
     try {
         const ngoId = req.user.userId;
@@ -32,6 +49,15 @@ export async function getCampaignsByNGO(req, res) {
     }
 }
 
+/**
+ * Get all active campaigns (public endpoint).
+ * 
+ * Architecture: Returns only active campaigns for public browsing.
+ * Used by the NGOs page and campaign listing pages. No authentication required.
+ * 
+ * Note: Populates 'ngo' field which references User model. Since NGO is a discriminator
+ * of User, Mongoose automatically includes NGO-specific fields when populating.
+ */
 export async function getAllCampaigns(req, res) {
     try {
         const campaigns = await Campaign.find({ status: 'active' }).populate('ngo', 'ngoName bannerImage');
@@ -42,8 +68,17 @@ export async function getAllCampaigns(req, res) {
     }
 }
 
+/**
+ * Get a single campaign by ID.
+ * 
+ * Architecture: Extracts campaign ID from URL path (e.g., /api/campaigns/123).
+ * Uses URL parsing since we're not using Express router params.
+ * Populates NGO data for display on campaign detail page.
+ */
 export async function getCampaignById(req, res) {
     try {
+        // Extract campaign ID from URL path
+        // Example: /api/campaigns/507f1f77bcf86cd799439011 -> 507f1f77bcf86cd799439011
         const segments = req.url.split("?")[0].split("/").filter(Boolean);
         const campaignId = segments.at(-1);
 
@@ -58,43 +93,24 @@ export async function getCampaignById(req, res) {
     }
 }
 
+/**
+ * Get all campaigns for a specific NGO by NGO ID (public endpoint).
+ * 
+ * Architecture: Used to display all campaigns for a specific NGO on their
+ * profile page. No authentication required - this is public data.
+ * Extracts NGO ID from URL path.
+ */
 export async function getCampaignsByNGOId(req, res) {
     try {
+        // Extract NGO ID from URL path
+        // Example: /api/campaigns/ngo/507f1f77bcf86cd799439011 -> 507f1f77bcf86cd799439011
         const segments = req.url.split("?")[0].split("/").filter(Boolean);
         const ngoId = segments.at(-1);
 
-        const campaigns = await Campaign.find({ ngo: ngoId });
+        const campaigns = await Campaign.find({ ngo: ngoId, status: 'active' });
         sendJson(res, 200, { campaigns });
     } catch (err) {
         console.error('Error fetching campaigns for NGO:', err);
         sendJson(res, 500, { message: 'Internal Server Error' });
     }
 }
-
-// 🥳
-// It's special  skill  😁
-// win + v
-// 🔝 here use this join the club
-// Let's keep all this for the teacher 😂😂
-// it's settled I'm commiting this file I guess it is too late for that 😁
-// Sure sure beka distract alaregeshem
-// Essay etsefeleshalew dw ... Lorem Ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-// AI is also suggesting me conversation it is no longer coding assistant
-// Okay back to work I know that I won't get back to it if I don't start now 😂
-// 💪
-// finally
-// how can you use emojis here
-// and ken tesasto metolgn neber idk what i clicked
-// okay enough with the brag haha(i would use a laughing emoji if i knew how to)
-// 😂😂yessssssssssss
-// that would be so hilarious 100 neber mnagegnew
-// what if he doesn't have a humor we will be cooked
-// let's get back to work anteee i haven't done anything ekoo
-// smeles manebew neger tsfeh tebkegn
-//😂😂i wasn't expecting that
-// go ai
-// lock in time
-
-
-// We did it we made it we are champions
-// I belive that when you see this we are probably done with the project 😁

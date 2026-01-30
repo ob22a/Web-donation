@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // SINGLE TEMPLATE - Choose your favorite one
-function generateReceiptHTML({ donation, campaign, donor }) {
+export function generateReceiptHTML({ donation, campaign, donor }) {
   const platformName = process.env.PLATFORM_NAME || "Charity Platform";
 
   // Donor info

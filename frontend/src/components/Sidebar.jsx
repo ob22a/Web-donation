@@ -1,10 +1,31 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useCallback } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../style/drawer.css';
 
+/**
+ * Sidebar/Drawer component - profile menu that slides in from the side.
+ * 
+ * Architecture: Displays user profile information and navigation links.
+ * Only shown when user is logged in. Overlay closes drawer when clicked.
+ * 
+ * Accessibility: Uses aria-hidden to indicate drawer state to screen readers.
+ */
 const Sidebar = ({ isOpen, onToggleDrawer }) => {
     const { logout, user } = useAuth();
+    const navigate = useNavigate();
+
+    /**
+     * Handle logout and close drawer.
+     * 
+     * Why useCallback: This function is passed to onClick handlers.
+     * Memoization prevents unnecessary re-renders if Sidebar is memoized.
+     */
+    const handleLogout = useCallback(async () => {
+        await logout();
+        onToggleDrawer();
+        navigate('/');
+    }, [logout, onToggleDrawer, navigate]);
 
     return (
         <>
@@ -34,12 +55,12 @@ const Sidebar = ({ isOpen, onToggleDrawer }) => {
                     <div className="drawer-links">
                         <NavLink to={user?.role === 'ngo' ? '/dashboard' : '/donor-dashboard'} className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Dashboard</NavLink>
                         <NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Edit Profile</NavLink>
+                        <NavLink to="/notifications" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Notifications</NavLink>
+                        <NavLink to="/help" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Help</NavLink>
                         {/* <NavLink to="#" onClick={(e) => e.preventDefault()}>Settings</NavLink> */}
                         {/* <NavLink to="#" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>My Donations</NavLink> */}
-                        {/* <Link to="/notifications">Notifications</Link> */}
                         <button type="button">Theme 🌞/🌙</button>
-                        {/* <Link to="#">Need help?</Link> */}
-                        <button type="button" onClick={() => { logout(); onToggleDrawer(); }}>Logout</button>
+                        <button type="button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
             </aside>

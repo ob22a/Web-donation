@@ -59,7 +59,8 @@ const AllDonations = () => {
 
     const filteredDonations = useMemo(() => {
         return donations.filter(d => {
-            const donorName = (d.isAnnonymous ? 'Anonymous' : (d.donorId?.name || 'Guest')).toLowerCase();
+            // Data Integration: Support searching by manual entry names
+            const donorName = (d.isAnnonymous ? 'Anonymous' : (d.donorName || d.donorId?.name || 'Guest')).toLowerCase();
             const matchName = donorName.includes(filters.name.toLowerCase());
             const matchAmount = filters.minAmount ? d.amount >= Number(filters.minAmount) : true;
             const matchDate = filters.date ? new Date(d.createdAt).toISOString().split('T')[0] === filters.date : true;
@@ -137,7 +138,10 @@ const AllDonations = () => {
                     filteredDonations.map(donation => (
                         <article key={donation._id} className="donation-card">
                             <div className="campaign-tag">{donation.campaignId?.title || 'Unknown Campaign'}</div>
-                            <h3 className="donor-name">{donation.isAnnonymous ? 'Anonymous' : (donation.donorId?.name || 'Guest Donor')}</h3>
+                            <h3 className="donor-name">
+                                {/* Data Integration: Prioritize donorName for manual/corrected records */}
+                                {donation.isAnnonymous ? 'Anonymous' : (donation.donorName || donation.donorId?.name || 'Guest Donor')}
+                            </h3>
                             <div className="donation-amount">
                                 {donation.amount.toLocaleString()} <small>ETB</small>
                             </div>
