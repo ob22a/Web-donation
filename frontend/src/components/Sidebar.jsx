@@ -55,11 +55,11 @@ const Sidebar = ({ isOpen, onToggleDrawer }) => {
                     <div className="drawer-links">
                         <NavLink to={user?.role === 'ngo' ? '/dashboard' : '/donor-dashboard'} className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Dashboard</NavLink>
                         <NavLink to="/profile" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Edit Profile</NavLink>
+                        <NavLink to="/notifications" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Notifications</NavLink>
+                        <NavLink to="/help" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>Help</NavLink>
                         {/* <NavLink to="#" onClick={(e) => e.preventDefault()}>Settings</NavLink> */}
                         {/* <NavLink to="#" className={({ isActive }) => isActive ? 'active' : ''} onClick={onToggleDrawer}>My Donations</NavLink> */}
-                        {/* <Link to="/notifications">Notifications</Link> */}
                         <button type="button">Theme 🌞/🌙</button>
-                        {/* <Link to="#">Need help?</Link> */}
                         <button type="button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>

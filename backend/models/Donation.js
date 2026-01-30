@@ -1,22 +1,55 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const donationSchema = new mongoose.Schema({
-    campaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'Campaign', required: true },
-    donorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },// I removed required to allow manual donations
+const donationSchema = new mongoose.Schema(
+  {
+    campaignId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Campaign",
+      required: true,
+    },
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Donor",
+    }, // I removed required to allow manual donations
     /**
      * donorName: Stores the display name for manual or guest donations.
      * Why: Allows NGOs to record names for offline donors while maintaining a null donorId.
      */
-    donorName: { type: String },
-    amount: { type: Number, required: true },
-    isAnnonymous: { type: Boolean, default: false },
-    isManual: { type: Boolean, default: false },
-    method: {
-        type: { type: String },
-        identifier: { type: String },
+    donorName: {
+      type: String,
     },
-}, { timestamps: true });
+    amount: {
+      type: Number,
+      required: true,
+    },
+    isAnnonymous: {
+      type: Boolean,
+      default: false,
+    },
+    isManual: {
+      type: Boolean,
+      default: false,
+    },
+    // Whether a receipt email has been sent to the donor
+    receiptEmailSent: {
+      type: Boolean,
+      default: false,
+    },
+    receiptSentAt: {
+      type: Date,
+    },
+    method: {
+      type: {
+        type: String,
+      },
+      identifier: {
+        type: String,
+      },
+    },
+  },
+  { timestamps: true },
+);
 
-const Donation = mongoose.model('Donation', donationSchema);
+const Donation = mongoose.model("Donation", donationSchema);
 
 export default Donation;

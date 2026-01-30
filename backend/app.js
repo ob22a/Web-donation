@@ -1,15 +1,16 @@
-import http from 'http'
-import url from 'url'
-import 'dotenv/config'
+import http from "http";
+import url from "url";
+import "dotenv/config";
 
-import connectDB from './config/db.js';
-import applyCors from './config/cors.js';
-import { sendJson } from './utils/response.js';
-import authRoutes from './routes/authRoutes.js';
-import ngoRoutes from './routes/NGORoutes.js';
-import campaignRoutes from './routes/campaignRoutes.js';
-import donorRoutes from './routes/donorRoutes.js';
-import donationRoutes from './routes/donationRoutes.js';
+import connectDB from "./config/db.js";
+import applyCors from "./config/cors.js";
+import { sendJson } from "./utils/response.js";
+import authRoutes from "./routes/authRoutes.js";
+import ngoRoutes from "./routes/NGORoutes.js";
+import campaignRoutes from "./routes/campaignRoutes.js";
+import donorRoutes from "./routes/donorRoutes.js";
+import donationRoutes from "./routes/donationRoutes.js";
+import recurringRoutes from "./routes/recurringRoutes.js";
 
 /*
  These are added so that we can prevent MissingSchemaError when we populate this registers the schemas early 
@@ -21,25 +22,26 @@ import './models/Donor.js';
 import './models/NGO.js';
 import './models/Campaign.js';
 import './models/Donation.js';
+import "./models/RecurringDonation.js";
 
 /*
     Since this is pure node project we will use this to manually collect chunk of data to req.body
 */
 function parseJSONBody(req) {
-    return new Promise((resolve) => {
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
+  return new Promise((resolve) => {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
 
-        req.on('end', () => {
-            try {
-                const parsed = JSON.parse(body);
-                resolve(parsed);
-            } catch (error) {
-                // We reurn empty object when error and routes will catch that it's empty
-                resolve({});
-            }
+    req.on('end', () => {
+        try {
+            const parsed = JSON.parse(body);
+            resolve(parsed);
+        } catch (error) {
+            // We reurn empty object when error and routes will catch that it's empty
+            resolve({});
+        }
         })
     })
 }
@@ -69,6 +71,7 @@ const server = http.createServer(async (req, res) => {
         if (await campaignRoutes(req, res, pathname)) return;
         if (await donorRoutes(req, res, pathname)) return;
         if (await donationRoutes(req, res, pathname)) return;
+        if (await recurringRoutes(req, res, pathname)) return;
 
         // No route matched - return 404
         return sendJson(res, 404, { message: 'Route Not Found' });
@@ -76,13 +79,13 @@ const server = http.createServer(async (req, res) => {
         console.error('Server Error:', error);
         sendJson(res, 500, { message: 'Internal Server Error' });
     }
-})
+});
 
 const PORT = process.env.PORT || 3000;
 
 (async () => {
-    await connectDB();
-    server.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
+  await connectDB();
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 })();

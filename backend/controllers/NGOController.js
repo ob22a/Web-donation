@@ -12,11 +12,11 @@ import mongoose from "mongoose";
 export async function getAllNGOs(req, res) {
   try {
     // Logic to get all NGOs from the database
-    const ngos = await NGO.find({ role: 'NGO' });
+    const ngos = await NGO.find({ role: "NGO" });
     sendJson(res, 200, { ngos });
   } catch (err) {
-    console.error('Error fetching NGOs:', err);
-    sendJson(res, 500, { message: 'Internal Server Error' });
+    console.error("Error fetching NGOs:", err);
+    sendJson(res, 500, { message: "Internal Server Error" });
   }
 }
 
@@ -24,33 +24,43 @@ export async function getNGOById(req, res) {
   try {
     const segments = req.url.split("?")[0].split("/").filter(Boolean);
     const id = segments[2]; // beacause the route is api/ngo/:id
-    if (mongoose.Types.ObjectId.isValid(id) === false) return sendJson(res, 400, { message: 'Invalid NGO ID' });
+    if (mongoose.Types.ObjectId.isValid(id) === false)
+      return sendJson(res, 400, { message: "Invalid NGO ID" });
     const ngo = await NGO.findById(id);
     sendJson(res, 200, { ngo });
   } catch (err) {
-    console.error('Error fetching NGO:', err);
-    sendJson(res, 500, { message: 'Internal Server Error' });
+    console.error("Error fetching NGO:", err);
+    sendJson(res, 500, { message: "Internal Server Error" });
   }
 }
 
 export async function updateNGO(req, res) {
   try {
     const data = req.body;
-    if (!data || Object.keys(data).length === 0 || !data.name || !data.category || !data.description) {
-      return sendJson(res, 400, { message: 'All fields are required' });
+    if (
+      !data ||
+      Object.keys(data).length === 0 ||
+      !data.name ||
+      !data.category ||
+      !data.description
+    ) {
+      return sendJson(res, 400, { message: "All fields are required" });
     }
     const id = req.user.userId; // from auth middleware
-    if (!mongoose.Types.ObjectId.isValid(id)) return sendJson(res, 400, { message: 'Invalid NGO ID' });
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return sendJson(res, 400, { message: "Invalid NGO ID" });
 
     const updatedNGO = await NGO.findByIdAndUpdate(id, data, { new: true });
     if (!updatedNGO) {
-      return sendJson(res, 404, { message: 'NGO not found' });
+      return sendJson(res, 404, { message: "NGO not found" });
     }
     const updatedNGOObj = updatedNGO.toObject({ virtuals: true });
-    sendJson(res, 200, { updatedNGO: { ...updatedNGOObj, id: updatedNGOObj._id } });
+    sendJson(res, 200, {
+      updatedNGO: { ...updatedNGOObj, id: updatedNGOObj._id },
+    });
   } catch (err) {
-    console.error('Error updating NGO:', err);
-    sendJson(res, 500, { message: 'Internal Server Error' });
+    console.error("Error updating NGO:", err);
+    sendJson(res, 500, { message: "Internal Server Error" });
   }
 }
 
@@ -66,8 +76,9 @@ export const uploadNgoBanner = async (req, res) => {
         return sendJson(res, 400, { message: "Invalid file upload" });
       }
 
-      const id = req.user.userId
-      if (!mongoose.Types.ObjectId.isValid(id)) return sendJson(res, 400, { message: "Invalid NGO ID" });
+      const id = req.user.userId;
+      if (!mongoose.Types.ObjectId.isValid(id))
+        return sendJson(res, 400, { message: "Invalid NGO ID" });
       const ngo = await NGO.findById(id);
 
       if (!ngo) {
@@ -98,3 +109,83 @@ export const uploadNgoBanner = async (req, res) => {
     }
   });
 };
+
+/* ============================
+   NGO DASHBOARD STATS
+============================ */
+export async function getNGODashboardStats(req, res) {
+  try {
+    const ngoId = req.user?.ngoId;
+
+    if (!ngoId) {
+      return sendJson(res, 403, { message: "No NGO associated with user" });
+    }
+
+    // Get all campaigns for this NGO
+    const campaigns = await Campaign.find({ ngo: ngoId }).select("_id title");
+    const campaignIds = campaigns.map((c) => c._id);
+
+    // Get donations for these campaigns
+    const donations = await Donation.find({
+      campaignId: { $in: campaignIds },
+    });
+
+    // Calculate statistics
+    const totalDonations = donations.length;
+    const totalAmount = donations.reduce((sum, d) => sum + d.amount, 0);
+    const anonymousCount = donations.filter((d) => d.isAnnonymous).length;
+    const manualCount = donations.filter((d) => d.isManual).length;
+
+    // Get recent donations
+    const recentDonations = donations
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 10)
+      .map((d) => ({
+        id: d._id,
+        amount: d.amount,
+        date: d.createdAt,
+        anonymous: d.isAnnonymous,
+        manual: d.isManual,
+      }));
+
+    // Get campaigns with donation counts
+    const campaignsWithStats = await Promise.all(
+      campaigns.map(async (campaign) => {
+        const campaignDonations = donations.filter(
+          (d) => d.campaignId.toString() === campaign._id.toString(),
+        );
+        const campaignTotal = campaignDonations.reduce(
+          (sum, d) => sum + d.amount,
+          0,
+        );
+
+        return {
+          id: campaign._id,
+          title: campaign.title,
+          donationCount: campaignDonations.length,
+          totalAmount: campaignTotal,
+        };
+      }),
+    );
+
+    // Sort campaigns by total amount (descending)
+    campaignsWithStats.sort((a, b) => b.totalAmount - a.totalAmount);
+
+    return sendJson(res, 200, {
+      stats: {
+        totalDonations,
+        totalAmount,
+        anonymousCount,
+        manualCount,
+        averageDonation: totalDonations > 0 ? totalAmount / totalDonations : 0,
+        campaignCount: campaigns.length,
+      },
+      recentDonations,
+      topCampaigns: campaignsWithStats.slice(0, 5),
+      campaigns: campaignsWithStats,
+    });
+  } catch (err) {
+    console.error("Error fetching NGO dashboard stats:", err);
+    return sendJson(res, 500, { message: "Failed to fetch dashboard stats" });
+  }
+}

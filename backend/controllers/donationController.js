@@ -1,187 +1,192 @@
-// POST donation
-// Get all donations for a specific campaign paginated 
-
+// controllers/donationController.js
 import Donation from "../models/Donation.js";
 import Campaign from "../models/Campaign.js";
-import Donor from "../models/Donor.js";
 import { sendJson } from "../utils/response.js";
+import { sendDonationReceipt } from "../utils/donationEmailService.js";
+import { generateReceiptHTML } from "../utils/donationEmailService.js";
 
-
+/* ============================
+   CREATE DONATION
+============================ */
 export async function createDonation(req, res) {
   try {
-    const { campaignId, donorId, donorName, amount, isAnnonymous, isManual, method } = req.body;
+    const { campaignId, donorId, amount, isAnnonymous, isManual, method } =
+      req.body;
+
     if (!campaignId || !amount) {
-      return sendJson(res, 400, { message: 'campaignId and amount are required' });
+      return sendJson(res, 400, {
+        message: "campaignId and amount are required",
+      });
     }
 
-    const newDonation = new Donation({
+    const donation = await Donation.create({
       campaignId,
       donorId: donorId || null,
-      donorName: donorName || null,
       amount,
       isAnnonymous,
       isManual,
       method: method || { type: null, identifier: null },
     });
-    await newDonation.save();
 
-    // ---- Data Integration: Update Related Entities ----
-
-    // 1. Update Campaign raisedAmount
-    // Why: Ensures the progress bar on the frontend reflects real data.
-    await Campaign.findByIdAndUpdate(campaignId, {
-      $inc: { raisedAmount: amount }
-    });
-
-    // 2. Update Donor stats if not a guest
-    if (donorId) {
-      const donor = await Donor.findById(donorId);
-      if (donor) {
-        // Increment totals
-        donor.totalDonated += amount;
-
-        // We only increment supported count if they haven't donated to this campaign before
-        // But for simplicity in this pass, we'll increment if it's a new donation (behavior preservation)
-        const previousDonations = await Donation.countDocuments({ donorId, _id: { $ne: newDonation._id } });
-        if (previousDonations === 0) {
-          // 3. Award 'Early Supporter' badge for first donation
-          // Replaces frontend static community message.
-          if (!donor.badges.includes("Early Supporter")) {
-            donor.badges.push("Early Supporter");
-          }
-        }
-
-        // Increment count of total successful contributions
-        donor.campaignsSupportedCount += 1;
-
-        await donor.save();
-      }
-    }
-
-    sendJson(res, 201, { newDonation });
+    return sendJson(res, 201, { donation });
   } catch (err) {
-    console.error('Error creating donation:', err);
-    sendJson(res, 500, { message: 'Internal Server Error' });
+    console.error("Error creating donation:", err);
+    return sendJson(res, 500, { message: "Internal Server Error" });
   }
 }
 
+/* ============================
+   MY DONATIONS
+============================ */
 export async function getMyDonations(req, res) {
   try {
-    const donorId = req.user.userId;
-    const donations = await Donation.find({ donorId })
-      .populate('campaignId', 'title')
+    const userId = req.user?.userId || req.user?.id;
+
+    const donations = await Donation.find({ donorId: userId })
+      .populate({
+        path: "campaignId",
+        select: "title ngo coverImage",
+        populate: { path: "ngo", select: "name logo" },
+      })
       .sort({ createdAt: -1 });
-    sendJson(res, 200, { donations });
+
+    return sendJson(res, 200, { donations });
   } catch (err) {
     console.error("Error fetching my donations:", err);
-    sendJson(res, 500, { message: "Internal Server Error" });
+    return sendJson(res, 500, { message: "Failed to fetch donations" });
   }
 }
 
-export async function getDonationsByCampaign(req, res) {
-  try {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const segments = url.pathname.split("/").filter(Boolean);
-    const campaignId = segments[2]; // api/donations/:id
-
-    const page = parseInt(url.searchParams.get("page")) || 1;
-    const limit = parseInt(url.searchParams.get("limit")) || 10;
-    const skip = (page - 1) * limit;
-
-    // Get total count for pagination
-    const total = await Donation.countDocuments({ campaignId });
-
-    // Fetch current page
-    const donations = await Donation.find({ campaignId })
-      .populate('donorId', 'name')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const totalPages = Math.ceil(total / limit);
-
-    sendJson(res, 200, {
-      donations,
-      pagination: {
-        totalItems: total,
-        totalPages,
-        currentPage: page,
-        pageSize: limit,
-      },
-    });
-  } catch (err) {
-    console.error("Error fetching donations:", err);
-    sendJson(res, 500, { message: "Internal Server Error" });
-  }
-}
-
+/* ============================
+   NGO DONATIONS
+============================ */
 export async function getNGODonations(req, res) {
   try {
-    const ngoId = req.user.userId;
+    const ngoId = req.user?.ngoId;
 
-    // 1. Get all campaign IDs for this NGO
-    const campaigns = await Campaign.find({ ngo: ngoId }).select('_id');
-    const campaignIds = campaigns.map(c => c._id);
+    const campaigns = await Campaign.find({ ngo: ngoId }).select("_id");
+    const campaignIds = campaigns.map((c) => c._id);
 
-    // 2. Get all donations for those campaigns
-    const donations = await Donation.find({ campaignId: { $in: campaignIds } })
-      .populate('donorId', 'name')
-      .populate('campaignId', 'title')
+    const donations = await Donation.find({
+      campaignId: { $in: campaignIds },
+    })
+      .populate("donorId", "name email")
+      .populate("campaignId", "title")
       .sort({ createdAt: -1 });
 
-    sendJson(res, 200, { donations });
+    return sendJson(res, 200, { donations });
   } catch (err) {
     console.error("Error fetching NGO donations:", err);
-    sendJson(res, 500, { message: "Internal Server Error" });
+    return sendJson(res, 500, { message: "Failed to fetch donations" });
   }
 }
 
-/**
- * Get aggregated statistics for the NGO dashboard.
- * 
- * Why: Provides real backend data for dashboard metrics (Total Raised, Donors, Active Campaigns).
- * This eliminates the placeholders previously seen on the NGO dashboard.
- */
-export async function getNGODashboardStats(req, res) {
+/* ============================
+   DONATIONS BY CAMPAIGN
+============================ */
+export async function getDonationsByCampaign(req, res) {
   try {
-    const ngoId = req.user.userId;
+    const { campaignId } = req.params;
 
-    // 1. Get all campaigns for this NGO
-    const campaigns = await Campaign.find({ ngo: ngoId });
-    const campaignIds = campaigns.map(c => c._id);
+    const donations = await Donation.find({ campaignId })
+      .populate("donorId", "name")
+      .sort({ createdAt: -1 });
 
-    // 2. Aggregate stats from campaigns
-    const totalRaised = campaigns.reduce((sum, c) => sum + (c.raisedAmount || 0), 0);
-    const activeCampaignsCount = campaigns.filter(c => c.status === 'active').length;
+    return sendJson(res, 200, { donations });
+  } catch (err) {
+    console.error("Error fetching donations by campaign:", err);
+    return sendJson(res, 500, { message: "Failed to fetch donations" });
+  }
+}
 
-    // 3. Count unique donors from all donations to these campaigns
-    // Why: Considers both registered donors (by ID) and manual/guest donors (by name).
-    const uniqueDonorsResult = await Donation.aggregate([
-      { $match: { campaignId: { $in: campaignIds } } },
-      {
-        $group: {
-          _id: {
-            $cond: [
-              { $ne: ["$donorId", null] },
-              "$donorId",
-              "$donorName"
-            ]
-          }
-        }
-      },
-      { $count: "count" }
-    ]);
+/* ============================
+   EMAIL RECEIPT
+============================ */
+export async function emailDonationReceipt(req, res) {
+  try {
+    const { donationId } = req.params;
 
-    const donorsCount = uniqueDonorsResult.length > 0 ? uniqueDonorsResult[0].count : 0;
+    const donation = await Donation.findById(donationId)
+      .populate("donorId", "name email")
+      .populate({
+        path: "campaignId",
+        populate: { path: "ngo", select: "name" },
+      });
 
-    sendJson(res, 200, {
-      totalRaised,
-      activeCampaignsCount,
-      donorsCount,
-      totalCampaigns: campaigns.length
+    if (!donation) return sendJson(res, 404, { message: "Donation not found" });
+
+    const userId = req.user?.userId || req.user?.id;
+    const userRole = req.user?.role;
+    const userNgoId = req.user?.ngoId;
+
+    let hasPermission = false;
+    if (userRole === "admin") hasPermission = true;
+    else if (
+      ["ngo_admin", "ngo_user"].includes(userRole) &&
+      donation.campaignId?.ngo?._id?.toString() === userNgoId
+    )
+      hasPermission = true;
+    else if (
+      userRole === "donor" &&
+      donation.donorId?._id?.toString() === userId
+    )
+      hasPermission = true;
+
+    if (!hasPermission)
+      return sendJson(res, 403, { message: "Permission denied" });
+
+    if (!donation.donorId?.email)
+      return sendJson(res, 400, { message: "Donor has no email" });
+
+    const subject = `Donation Receipt — ${donation.campaignId?.title}`;
+    const html = generateReceiptHTML({ donation });
+
+    const emailResult = await sendDonationReceipt({
+      to: donation.donorId.email,
+      subject,
+      html,
+    });
+
+    donation.receiptEmailSent = emailResult.ok;
+    donation.receiptSentAt = emailResult.ok
+      ? new Date()
+      : donation.receiptSentAt;
+
+    await donation.save();
+
+    return sendJson(res, 200, {
+      message: "Receipt sent successfully",
+      donation,
     });
   } catch (err) {
-    console.error("Error fetching NGO stats:", err);
-    sendJson(res, 500, { message: "Internal Server Error" });
+    console.error("Error emailing receipt:", err);
+    return sendJson(res, 500, { message: "Internal Server Error" });
+  }
+}
+
+/* ============================
+   RECEIPT STATUS
+============================ */
+export async function getDonationReceiptStatus(req, res) {
+  try {
+    const { donationId } = req.params;
+
+    const donation = await Donation.findById(donationId).select(
+      "receiptEmailSent receiptSentAt",
+    );
+
+    if (!donation) return sendJson(res, 404, { message: "Donation not found" });
+
+    return sendJson(res, 200, {
+      receiptEmailSent: donation.receiptEmailSent,
+      receiptSentAt: donation.receiptSentAt,
+      canResend:
+        !donation.receiptEmailSent ||
+        Date.now() - new Date(donation.receiptSentAt).getTime() >
+          24 * 60 * 60 * 1000,
+    });
+  } catch (err) {
+    console.error("Error fetching receipt status:", err);
+    return sendJson(res, 500, { message: "Internal Server Error" });
   }
 }

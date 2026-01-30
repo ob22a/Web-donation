@@ -175,37 +175,67 @@ const NGOs = () => {
             </section>
 
             <section className="ngos-section">
-                {loading && ngos.length === 0 ? <p style={{ textAlign: 'center' }}>Loading NGOs...</p> :
-                    filteredNGOs.length > 0 ? (
-                        <div className="carousel-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-                            <button onClick={prevNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>◀</button>
-
-                            <article className="ngo-card" style={{ flex: 1 }}>
-                                <img
-                                    className="ngo-card-image"
-                                    src={currentNGO.bannerImage || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=400&auto=format&fit=crop"}
-                                    alt={currentNGO.ngoName || currentNGO.name}
-                                />
-                                <div className="ngo-card-body">
-                                    <h2 className="ngo-card-title">{currentNGO.ngoName || currentNGO.name}</h2>
-                                    <p className="ngo-card-description">{currentNGO.description || "No description provided."}</p>
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                                        <button
-                                            className="primary-button ngo-card-button"
-                                            style={{ flex: 1 }}
-                                            onClick={() => openModal(currentNGO)}
-                                        >
-                                            Donate
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-
-                            <button onClick={nextNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>▶</button>
-                        </div>
+                {loading && ngos.length === 0 ? (
+                    <p style={{ textAlign: 'center' }}>Loading NGOs...</p>
+                ) : (
+                    // If user has typed a search query, show a grid of matching NGO cards
+                    (searchQuery && searchQuery.trim() !== '') ? (
+                        filteredNGOs.length > 0 ? (
+                            <div className="ngos-grid">
+                                {filteredNGOs.map((ngo) => (
+                                    <article key={ngo._id} className="ngo-card">
+                                        <img
+                                            className="ngo-card-image"
+                                            src={ngo.bannerImage || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=400&auto=format&fit=crop"}
+                                            alt={ngo.ngoName || ngo.name}
+                                        />
+                                        <div className="ngo-card-body">
+                                            <h2 className="ngo-card-title">{ngo.ngoName || ngo.name}</h2>
+                                            <p className="ngo-card-description">{ngo.description || "No description provided."}</p>
+                                            <div className="ngo-card-actions" style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                                                <button className="primary-button ngo-card-button" style={{ flex: 1 }} onClick={() => openModal(ngo)}>Donate</button>
+                                            </div>
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        ) : (
+                            <p style={{ textAlign: 'center' }}>No NGOs found matching your search.</p>
+                        )
                     ) : (
-                        <p style={{ textAlign: 'center' }}>{searchQuery ? "No NGOs found matching your search." : "No NGOs registered yet."}</p>
-                    )}
+                        // No search query: show carousel of NGOs (as before)
+                        filteredNGOs.length > 0 ? (
+                            <div className="carousel-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', maxWidth: '600px', margin: '0 auto' }}>
+                                <button onClick={prevNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>◀</button>
+
+                                <article className="ngo-card" style={{ flex: 1 }}>
+                                    <img
+                                        className="ngo-card-image"
+                                        src={currentNGO.bannerImage || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=400&auto=format&fit=crop"}
+                                        alt={currentNGO.ngoName || currentNGO.name}
+                                    />
+                                    <div className="ngo-card-body">
+                                        <h2 className="ngo-card-title">{currentNGO.ngoName || currentNGO.name}</h2>
+                                        <p className="ngo-card-description">{currentNGO.description || "No description provided."}</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                                            <button
+                                                className="primary-button ngo-card-button"
+                                                style={{ flex: 1 }}
+                                                onClick={() => openModal(currentNGO)}
+                                            >
+                                                Donate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <button onClick={nextNGO} className="carousel-btn" style={{ background: 'white', border: '1px solid #ddd', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer' }}>▶</button>
+                            </div>
+                        ) : (
+                            <p style={{ textAlign: 'center' }}>{searchQuery ? "No NGOs found matching your search." : "No NGOs registered yet."}</p>
+                        )
+                    )
+                )}
             </section>
 
             {/* Donation Modal */}
