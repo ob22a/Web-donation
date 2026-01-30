@@ -11,10 +11,18 @@ body.page-dashboard {
   display: block;
 }
 
+.page-my-campaigns .container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-block: 2rem;
+  box-sizing: border-sizing;
+}
+
 .dashboard-container {
   width: 100%;
   max-width: 1200px;
-  padding: 2rem 1rem;
+  padding-block: 2rem;
   margin: 0 auto 2rem;
 }
 
