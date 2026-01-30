@@ -5,12 +5,13 @@ import useFetch from '../hooks/useFetch';
 import { getNGOs } from '../apis/ngo';
 import { getCampaignsByNgo } from '../apis/campaigns';
 import { createDonation } from '../apis/donations';
+import { updateProfile } from '../apis/profile';
 import Toast from '../components/Toast';
 import '../style/ngos-description.css';
 
 const NGOs = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, refreshProfile } = useAuth();
     const { loading, error, fetchData } = useFetch();
     const [ngos, setNgos] = useState([]);
 
@@ -63,6 +64,21 @@ const NGOs = () => {
     }, [user]);
 
     const openModal = async (ngo) => {
+        if (!user) {
+            setToastMessage("Please login to donate to this NGO.");
+            setShowToast(true);
+            setTimeout(() => navigate('/login'), 1500);
+            return;
+        }
+
+        // Only donors need a payment method check (NGOs might be testing or recorded as Guest/Manual)
+        if (user.role === 'donor' && (!user.paymentMethods || user.paymentMethods.length === 0)) {
+            setToastMessage("Please add a payment method in your profile settings before donating.");
+            setShowToast(true);
+            setTimeout(() => navigate('/profile'), 2000);
+            return;
+        }
+
         setSelectedNGO(ngo);
         setIsModalOpen(true);
         setNgoCampaigns([]);
@@ -71,9 +87,11 @@ const NGOs = () => {
         try {
             const response = await getCampaignsByNgo(ngo._id);
             if (response.campaigns) {
-                setNgoCampaigns(response.campaigns);
-                if (response.campaigns.length > 0) {
-                    setDonationData(prev => ({ ...prev, campaign: response.campaigns[0]._id }));
+                // Additional filter for 'active' just in case, though backend now handles it.
+                const activeOnes = response.campaigns.filter(c => c.status === 'active' || !c.status);
+                setNgoCampaigns(activeOnes);
+                if (activeOnes.length > 0) {
+                    setDonationData(prev => ({ ...prev, campaign: activeOnes[0]._id }));
                 }
             }
         } catch (err) {
@@ -91,15 +109,41 @@ const NGOs = () => {
         if (!selectedNGO || !donationData.campaign || !donationData.amount) return;
 
         try {
+            // ---- Data Integration: Use real user data ----
+            // Why: Replaces hardcoded placeholder payment method with the user's actual default method.
+            const defaultMethod = user?.paymentMethods?.find(m => m.isDefault) || user?.paymentMethods?.[0];
+            const methodPayload = defaultMethod ? {
+                type: defaultMethod.type,
+                identifier: defaultMethod.identifier
+            } : { type: 'Guest/Manual', identifier: 'Manual Entry' };
+
             const response = await fetchData(createDonation, {
                 campaignId: donationData.campaign,
-                donorId: user ? (user.id || user._id) : null,
+                donorId: user && user.role === 'donor' ? (user.id || user._id) : null,
+                donorName: user ? user.name : 'Guest Donor',
                 amount: Number(donationData.amount),
                 isAnnonymous: false,
-                method: { type: 'Telebirr', identifier: '**** 3921' }
+                method: methodPayload
             });
 
             if (response.newDonation) {
+                // ---- Data Integration: Sync Recurring Settings ----
+                // Why: If user opted for recurrence during donation, we save it to their profile.
+                if (donationData.isRecurrent && user) {
+                    await fetchData(updateProfile, {
+                        recurringDonation: {
+                            enabled: true,
+                            amount: Number(donationData.amount),
+                            frequency: donationData.frequency
+                        }
+                    });
+                }
+
+                // ---- Data Integration: Refresh User Stats ----
+                // Why: A donation updates donor stats on the backend. 
+                // Refreshing the profile ensures the UI displays the latest totalDonated and badges.
+                refreshProfile();
+
                 setToastMessage(`Success! You donated ${donationData.amount} ETB to ${selectedNGO.ngoName || selectedNGO.name}`);
                 setShowToast(true);
                 closeModal();

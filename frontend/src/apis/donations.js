@@ -37,3 +37,12 @@ export const getNGODonations = async () => {
     })
     return res.json()
 }
+
+// GET {{base_url}}/ngo/stats
+export const getNGOStats = async () => {
+    const res = await fetch(`${VITE_APP_API_URI}/ngo/stats`, {
+        method: 'GET',
+        credentials: "include"
+    })
+    return res.json()
+}

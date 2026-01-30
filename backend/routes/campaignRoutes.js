@@ -24,7 +24,7 @@ export default async function campaignRoutes(req, res, pathname) {
         if (!auth(req, res)) return false;
         await getCampaignsByNGO(req, res);
         return true;
-    } else if (pathname === '/api/campaigns/ngo/' && req.method === 'GET') {
+    } else if (pathname.startsWith('/api/campaigns/ngo/') && req.method === 'GET') {
         await getCampaignsByNGOId(req, res);
         return true;
     } else if (pathname === '/api/campaigns/all' && req.method === 'GET') {

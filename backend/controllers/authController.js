@@ -42,21 +42,33 @@ export const login = async (req, res) => {
       return sendJson(res, 401, { message: "Incorrect password" });
     }
 
+    // Fetch role-specific user document to include all fields (like ngoName or badges)
+    let fullUser;
+    if (user.role === 'donor') {
+      fullUser = await Donor.findById(user._id).select('-password');
+    } else {
+      fullUser = await NGO.findById(user._id).select('-password');
+    }
+
+    if (!fullUser) {
+      return sendJson(res, 404, { message: "User profile not found" });
+    }
+
     const token = jwt.sign(
-      { userId: user._id, name: user.name, email: user.email, role: user.role },
+      { userId: fullUser._id, name: fullUser.name, email: fullUser.email, role: fullUser.role },
       process.env.JWT_SECRET || "secretkey",
       { expiresIn: "7d" }
     );
 
     const cookie = createAuthCookie(token);
 
+    const userObj = fullUser.toObject({ virtuals: true });
+    delete userObj.password;
+
     sendJson(res, 200, {
       user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        memberSince: user.createdAt,
-        role: user.role,
+        ...userObj,
+        id: userObj._id
       },
     }, [cookie]);
 
@@ -240,6 +252,10 @@ export const updateProfile = async (req, res) => {
       if (data.preference) {
         user.preference = { ...user.preference, ...data.preference };
       }
+      // Why: Syncs persistent recurring donation data with the donor's profile.
+      if (data.recurringDonation) {
+        user.recurringDonation = { ...user.recurringDonation, ...data.recurringDonation };
+      }
       // Add new payment method if provided
       if (data.paymentMethods && data.newPaymentMethod) {
         const method = data.newPaymentMethod;
@@ -329,11 +345,11 @@ export const uploadProfilePicture = async (req, res) => {
 
     // Parse multipart/form-data (file upload)
     // Use same pattern as donorController for consistency
-    const form = formidable({ 
-      multiples: false, 
+    const form = formidable({
+      multiples: false,
       maxFileSize: 5 * 1024 * 1024 // max 5MB
     });
-    
+
     form.parse(req, async (err, fields, files) => {
       try {
         if (err) {
@@ -343,10 +359,10 @@ export const uploadProfilePicture = async (req, res) => {
 
         // Handle both single file and array cases
         // Formidable may return file as array even with multiples: false
-        const file = Array.isArray(files.profilePicture) 
-          ? files.profilePicture[0] 
+        const file = Array.isArray(files.profilePicture)
+          ? files.profilePicture[0]
           : files.profilePicture;
-        
+
         if (!file) {
           return sendJson(res, 400, { message: "No file uploaded" });
         }

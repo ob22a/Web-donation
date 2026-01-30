@@ -26,7 +26,7 @@ import '../style/drawer.css';
 const Profile = () => {
     const { user, login } = useAuth();
     const { loading, error, fetchData } = useFetch();
-    
+
     // Memoize derived value to avoid recalculating on every render
     const isNGO = useMemo(() => user?.role === 'ngo', [user?.role]);
 
@@ -57,7 +57,8 @@ const Profile = () => {
 
     const [preferences, setPreferences] = useState({
         emailReceipts: true,
-        ngoUpdates: true
+        ngoUpdates: true,
+        notifyExpiringCards: true
     });
 
     const [passwords, setPasswords] = useState({
@@ -101,7 +102,8 @@ const Profile = () => {
             if (user.role === 'donor') {
                 setPreferences({
                     emailReceipts: user.preference?.emailReceipts ?? true,
-                    ngoUpdates: user.preference?.ngoUpdates ?? true
+                    ngoUpdates: user.preference?.ngoUpdates ?? true,
+                    notifyExpiringCards: user.preference?.notifyExpiringCards ?? true
                 });
                 setPaymentMethods(user.paymentMethods || []);
             } else if (user.role === 'ngo') {
@@ -471,6 +473,11 @@ const Profile = () => {
                                                     <label className="profile-checkbox-label">
                                                         <input type="checkbox" checked={preferences.ngoUpdates} onChange={e => setPreferences({ ...preferences, ngoUpdates: e.target.checked })} />
                                                         <span>NGO updates</span>
+                                                    </label>
+                                                    {/* Data Integration: Real preference from backend model */}
+                                                    <label className="profile-checkbox-label">
+                                                        <input type="checkbox" checked={preferences.notifyExpiringCards} onChange={e => setPreferences({ ...preferences, notifyExpiringCards: e.target.checked })} />
+                                                        <span>Notify me of expiring cards</span>
                                                     </label>
                                                 </div>
                                             </div>

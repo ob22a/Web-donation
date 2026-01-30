@@ -47,7 +47,9 @@ export const updateDonor = async (req, res) => {
       return sendJson(res, 400, { message: "Not a donor account" });
 
     // ---- 1. Update general fields ----
-    const generalFields = ["name", "profilePicture", "secondaryEmail", "phoneNumber", "city", "country", "preference"];
+    // Why: Allows the donor to update their profile info, notification preferences, 
+    // and new recurring donation settings (replacing static frontend state).
+    const generalFields = ["name", "profilePicture", "secondaryEmail", "phoneNumber", "city", "country", "preference", "recurringDonation"];
     generalFields.forEach(field => {
       if (data[field] !== undefined) donor[field] = data[field];
     });

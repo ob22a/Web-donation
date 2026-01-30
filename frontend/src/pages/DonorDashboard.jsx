@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import useFetch from "../hooks/useFetch";
 import { getMyDonations } from "../apis/donations";
+import { updateProfile } from "../apis/profile";
+import Toast from "../components/Toast";
 import "../style/DonorDashboard.css";
 
 /**
@@ -16,21 +18,53 @@ import "../style/DonorDashboard.css";
  * - Proper useEffect dependencies
  */
 const DonorDashboard = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const { loading, error, fetchData } = useFetch();
   const [donations, setDonations] = useState([]);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  // Sync preferences from user model
-  const [enabled, setEnabled] = useState("Off");
-  const [emailReceipts, setEmailReceipts] = useState(user?.preference?.emailReceipts ?? true);
-  const [reminder, setReminder] = useState(user?.preference?.ngoUpdates ?? true);
-  const [expiringCards, setExpiringCards] = useState(true);
+  const handleCloseToast = useCallback(() => {
+    setShowToast(false);
+  }, []);
+
+  // ---- Data Integration: Sync with real backend user model ----
+  // Why: Replaces static frontend-only state with persistent data from the API.
+
+  // Recurring donation state
+  const [recurring, setRecurring] = useState({
+    enabled: user?.recurringDonation?.enabled ?? false,
+    amount: user?.recurringDonation?.amount ?? 0,
+    frequency: user?.recurringDonation?.frequency ?? "monthly"
+  });
+
+  // Notification preferences
+  const [prefs, setPrefs] = useState({
+    emailReceipts: user?.preference?.emailReceipts ?? true,
+    ngoUpdates: user?.preference?.ngoUpdates ?? true,
+    notifyExpiringCards: user?.preference?.notifyExpiringCards ?? true
+  });
+
+  /**
+   * Sync local state when user object updates from AuthContext.
+   */
+  useEffect(() => {
+    if (user) {
+      setRecurring({
+        enabled: user.recurringDonation?.enabled ?? false,
+        amount: user.recurringDonation?.amount ?? 0,
+        frequency: user.recurringDonation?.frequency ?? "monthly"
+      });
+      setPrefs({
+        emailReceipts: user.preference?.emailReceipts ?? true,
+        ngoUpdates: user.preference?.ngoUpdates ?? true,
+        notifyExpiringCards: user.preference?.notifyExpiringCards ?? true
+      });
+    }
+  }, [user]);
 
   /**
    * Load donation data from API.
-   * 
-   * Why useCallback: Used in useEffect. Memoization prevents effect from
-   * re-running unnecessarily when component re-renders.
    */
   const loadData = useCallback(async () => {
     try {
@@ -45,16 +79,55 @@ const DonorDashboard = () => {
 
   useEffect(() => {
     if (user) loadData();
-  }, [user, loadData]); // Depend on memoized loadData instead of fetchData
+  }, [user, loadData]);
 
+  /**
+   * Calculate total donated locally for immediate feedback.
+   * Note: This matches the user.totalDonated field from backend.
+   */
   const totalDonated = useMemo(() => {
     return donations.reduce((acc, d) => acc + (d.amount || 0), 0);
   }, [donations]);
+
+  /**
+   * Data Integration: Save recurring donation settings to backend.
+   * Replaces the previous non-functional static button.
+   */
+  const handleSaveRecurring = async () => {
+    try {
+      const response = await fetchData(updateProfile, { recurringDonation: recurring });
+      if (response.user) {
+        login(response.user); // Update global auth state
+        setToastMessage("Recurring donation settings saved!");
+        setShowToast(true);
+      }
+    } catch (err) {
+      console.error('Failed to save recurring settings:', err);
+    }
+  };
+
+  /**
+   * Data Integration: Save notification preferences to backend.
+   * Replaces the previous non-functional static button.
+   */
+  const handleSavePreferences = async () => {
+    try {
+      const response = await fetchData(updateProfile, { preference: prefs });
+      if (response.user) {
+        login(response.user); // Update global auth state
+        setToastMessage("Notification preferences saved!");
+        setShowToast(true);
+      }
+    } catch (err) {
+      console.error('Failed to save preferences:', err);
+    }
+  };
 
   const initials = user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '??';
 
   return (
     <main className="dashboard">
+      {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
       {error && <div className="api-error-banner" style={{ color: 'red', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
 
       {/* PROFILE */}
@@ -83,11 +156,11 @@ const DonorDashboard = () => {
         <div className="card green-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
           <div>
             <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.5rem' }}>Total Donated</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-green)' }}>{totalDonated.toLocaleString()} <small>ETB</small></div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-green)' }}>{(user?.totalDonated || totalDonated).toLocaleString()} <small>ETB</small></div>
           </div>
           <div>
             <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.5rem' }}>Contributions</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-green)' }}>{donations.length}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-green)' }}>{user?.campaignsSupportedCount || donations.length}</div>
           </div>
         </div>
       </section>
@@ -96,7 +169,9 @@ const DonorDashboard = () => {
       <section className="section">
         <h3>Active Campaigns</h3>
         <p className="center-msg" style={{ marginBottom: '1rem' }}>Help make a difference today.</p>
-        <Link to="/ngos" className="primary-button" style={{ display: 'inline-block', width: 'auto', padding: '0.6rem 2rem' }}>Browse NGOs</Link>
+        <div style={{ textAlign: 'center' }}>
+          <Link to="/ngos" className="primary-button" style={{ display: 'inline-block', width: 'auto', padding: '0.6rem 2rem' }}>Browse NGOs</Link>
+        </div>
       </section>
 
       {/* IMPACT & TRANSACTIONS */}
@@ -144,25 +219,35 @@ const DonorDashboard = () => {
           <div className="form-row">
             <label>Enable</label>
             <select
-              value={enabled}
-              onChange={(e) => setEnabled(e.target.value)}
+              value={recurring.enabled ? "On" : "Off"}
+              onChange={(e) => setRecurring({ ...recurring, enabled: e.target.value === "On" })}
             >
               <option value="Off">Off</option>
               <option value="On">On</option>
             </select>
 
             <label>Amount (ETB)</label>
-            <input type="text" placeholder="e.g., 200" />
+            <input
+              type="number"
+              placeholder="e.g., 200"
+              value={recurring.amount}
+              onChange={(e) => setRecurring({ ...recurring, amount: Number(e.target.value) })}
+            />
 
             <label>Frequency</label>
-            <select>
-              <option>Daily</option>
-              <option>Weekly</option>
-              <option>Monthly</option>
+            <select
+              value={recurring.frequency}
+              onChange={(e) => setRecurring({ ...recurring, frequency: e.target.value })}
+            >
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
             </select>
           </div>
 
-          <button className="save-btn">Save Recurring</button>
+          <button className="save-btn" onClick={handleSaveRecurring} disabled={loading}>
+            {loading ? "Saving..." : "Save Recurring"}
+          </button>
         </div>
       </section>
 
@@ -174,8 +259,8 @@ const DonorDashboard = () => {
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', cursor: 'pointer' }}>
               <input
                 type="checkbox"
-                checked={emailReceipts}
-                onChange={() => setEmailReceipts(!emailReceipts)}
+                checked={prefs.emailReceipts}
+                onChange={() => setPrefs({ ...prefs, emailReceipts: !prefs.emailReceipts })}
               />
               Email me receipts
             </label>
@@ -183,8 +268,8 @@ const DonorDashboard = () => {
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', cursor: 'pointer' }}>
               <input
                 type="checkbox"
-                checked={reminder}
-                onChange={() => setReminder(!reminder)}
+                checked={prefs.ngoUpdates}
+                onChange={() => setPrefs({ ...prefs, ngoUpdates: !prefs.ngoUpdates })}
               />
               Remind me before recurring charges
             </label>
@@ -192,14 +277,16 @@ const DonorDashboard = () => {
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', cursor: 'pointer' }}>
               <input
                 type="checkbox"
-                checked={expiringCards}
-                onChange={() => setExpiringCards(!expiringCards)}
+                checked={prefs.notifyExpiringCards}
+                onChange={() => setPrefs({ ...prefs, notifyExpiringCards: !prefs.notifyExpiringCards })}
               />
               Notify me about expiring cards
             </label>
           </div>
 
-          <button className="save-btn">Save Preferences</button>
+          <button className="save-btn" onClick={handleSavePreferences} disabled={loading}>
+            {loading ? "Saving..." : "Save Preferences"}
+          </button>
         </div>
       </section>
 
@@ -207,9 +294,17 @@ const DonorDashboard = () => {
       <section className="section">
         <h3>Community & Recognition</h3>
         <div className="card green-card">
-          {donations.length > 0
-            ? "Congratulations! You've unlocked the 'Early Supporter' badge."
-            : "Unlock badges and milestones by making your first donation!"}
+          {user?.badges?.length > 0 ? (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {user.badges.map((badge, idx) => (
+                <span key={idx} style={{ background: 'var(--primary-green)', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.85rem', fontWeight: 600 }}>
+                  🏆 {badge}
+                </span>
+              ))}
+            </div>
+          ) : (
+            "Unlock badges and milestones by making your first donation!"
+          )}
         </div>
       </section>
     </main>

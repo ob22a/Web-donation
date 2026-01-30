@@ -4,6 +4,7 @@ import useFetch from '../hooks/useFetch';
 import { getCampaign } from '../apis/campaigns';
 import { createDonation, getDonationsByCampaign } from '../apis/donations';
 import { useAuth } from '../context/AuthContext';
+import Toast from '../components/Toast';
 import '../style/CampaignDetail.css';
 
 /**
@@ -19,15 +20,25 @@ import '../style/CampaignDetail.css';
  */
 const CampaignDetail = () => {
     const { id } = useParams();
-    const { user } = useAuth();
+    const { user, refreshProfile } = useAuth();
     const { loading, error, fetchData } = useFetch();
 
     const [campaign, setCampaign] = useState(null);
     const [donors, setDonors] = useState([]);
     const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
 
-    const [formData, setFormData] = useState({ name: '', amount: '', isAnonymous: false });
+    const [formData, setFormData] = useState({
+        name: user ? user.name : '',
+        amount: '',
+        isAnonymous: false
+    });
     const [donorFilter, setDonorFilter] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+
+    const handleCloseToast = useCallback(() => {
+        setShowToast(false);
+    }, []);
 
     /**
      * Load campaign data from API.
@@ -78,8 +89,11 @@ const CampaignDetail = () => {
         document.body.className = 'page-my-campaigns';
         loadCampaignData();
         loadDonations(1);
+        if (user) {
+            setFormData(prev => ({ ...prev, name: user.name }));
+        }
         return () => { document.body.className = ''; };
-    }, [loadCampaignData, loadDonations]);
+    }, [loadCampaignData, loadDonations, user]);
 
     /**
      * Calculate campaign progress percentage.
@@ -97,19 +111,25 @@ const CampaignDetail = () => {
         e.preventDefault();
         const payload = {
             campaignId: id,
-            donorId: user ? user.id : null,
+            // Manual entries recorded by NGO should have null donorId unless linked to a system account
+            donorId: user && user.role === 'donor' ? user.id : null,
+            donorName: formData.name || (user ? user.name : 'Guest'),
             amount: Number(formData.amount),
             isAnnonymous: formData.isAnonymous,
-            // If the user name is provided manually, we might want to handle it (backend allows donorId: null)
         };
 
         try {
             const response = await fetchData(createDonation, payload);
             if (response.newDonation) {
+                // ---- Data Integration: Refresh User Stats ----
+                // Why: Updates stats like totalDonated and badges which are displayed in the profile sidebar.
+                refreshProfile();
+
                 setFormData({ name: '', amount: '', isAnonymous: false });
                 loadCampaignData(); // Refresh totals
                 loadDonations(1); // Refresh donor list
-                alert('Donation recorded successfully!');
+                setToastMessage('Donation recorded successfully!');
+                setShowToast(true);
             }
         } catch (err) {
             console.error('Failed to record donation:', err);
@@ -135,6 +155,7 @@ const CampaignDetail = () => {
 
     return (
         <div className="container campaign-detail-container">
+            {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
             {error && <div className="api-error-banner" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
 
             <section className="campaign-info-card">
@@ -179,11 +200,11 @@ const CampaignDetail = () => {
                             <label>Donor Identity</label>
                             <input
                                 type="text"
-                                placeholder={user ? user.name : "Guest"}
-                                value={user ? user.name : formData.name}
+                                placeholder="Donor Name"
+                                value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                disabled={formData.isAnonymous || !!user}
-                                required={!formData.isAnonymous && !user}
+                                disabled={formData.isAnonymous}
+                                required={!formData.isAnonymous}
                             />
                         </div>
                         <div className="checkbox-row">
@@ -229,7 +250,8 @@ const CampaignDetail = () => {
                             <li key={donor._id} className="donor-li">
                                 <div className="donor-main-info">
                                     <span className="donor-name-text">
-                                        {donor.isAnnonymous ? 'Anonymous' : (donor.donorId?.name || 'Guest Donor')}
+                                        {/* Data Integration: Prioritize donorName for manual/corrected entries */}
+                                        {donor.isAnnonymous ? 'Anonymous' : (donor.donorName || donor.donorId?.name || 'Guest Donor')}
                                     </span>
                                     <span className="donor-date-text">{new Date(donor.createdAt).toDateString()}</span>
                                 </div>

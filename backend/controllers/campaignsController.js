@@ -107,7 +107,7 @@ export async function getCampaignsByNGOId(req, res) {
         const segments = req.url.split("?")[0].split("/").filter(Boolean);
         const ngoId = segments.at(-1);
 
-        const campaigns = await Campaign.find({ ngo: ngoId });
+        const campaigns = await Campaign.find({ ngo: ngoId, status: 'active' });
         sendJson(res, 200, { campaigns });
     } catch (err) {
         console.error('Error fetching campaigns for NGO:', err);

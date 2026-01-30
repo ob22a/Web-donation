@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../style/drawer.css';
 
@@ -13,6 +13,7 @@ import '../style/drawer.css';
  */
 const Sidebar = ({ isOpen, onToggleDrawer }) => {
     const { logout, user } = useAuth();
+    const navigate = useNavigate();
 
     /**
      * Handle logout and close drawer.
@@ -20,10 +21,11 @@ const Sidebar = ({ isOpen, onToggleDrawer }) => {
      * Why useCallback: This function is passed to onClick handlers.
      * Memoization prevents unnecessary re-renders if Sidebar is memoized.
      */
-    const handleLogout = useCallback(() => {
-        logout();
+    const handleLogout = useCallback(async () => {
+        await logout();
         onToggleDrawer();
-    }, [logout, onToggleDrawer]);
+        navigate('/');
+    }, [logout, onToggleDrawer, navigate]);
 
     return (
         <>

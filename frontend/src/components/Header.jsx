@@ -13,7 +13,7 @@ import '../style/header.css';
  * Profile icon shown when logged in, opens sidebar drawer.
  */
 const Header = ({ onToggleDrawer }) => {
-    const { isLoggedIn, logout, user } = useAuth();
+    const { isLoggedIn, user } = useAuth();
     const [isNavOpen, setIsNavOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -27,16 +27,7 @@ const Header = ({ onToggleDrawer }) => {
         setIsNavOpen(prev => !prev);
     }, []); // No deps: setState function is stable
 
-    /**
-     * Handle logout and redirect to login page.
-     * 
-     * Why useCallback: Used in onClick handler. Memoization ensures
-     * stable reference across re-renders.
-     */
-    const handleLogout = useCallback(() => {
-        logout();
-        navigate('/login');
-    }, [logout, navigate]); // Depend on logout and navigate
+
 
     // Derive user role flags for conditional rendering
     const isDonor = user?.role === 'donor';

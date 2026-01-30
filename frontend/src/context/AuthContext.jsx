@@ -92,6 +92,24 @@ export const AuthProvider = ({ children }) => {
   }, []); // No deps: dispatch is stable
 
   /**
+   * Refresh profile function - re-fetches user data from backend.
+   * 
+   * Use case: When backend data changes indirectly (e.g., after a donation, 
+   * totalDonated and badges might change). Calling this ensures the frontend 
+   * has the most up-to-date user statistics.
+   */
+  const refreshProfile = useCallback(async () => {
+    try {
+      const response = await getProfile();
+      if (response.user) {
+        dispatch({ type: 'LOGIN_SUCCESS', payload: response.user });
+      }
+    } catch (err) {
+      console.error('Failed to refresh profile:', err);
+    }
+  }, []); // No deps: dispatch is stable
+
+  /**
    * Context value object.
    * 
    * Why useMemo: The value object is recreated on every render. By memoizing it,
@@ -106,8 +124,9 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateUser,
+    refreshProfile,
     dispatch // Expose dispatch for complex actions if needed
-  }), [state.user, state.isAuthenticated, state.loading, state.error, login, logout, updateUser]);
+  }), [state.user, state.isAuthenticated, state.loading, state.error, login, logout, updateUser, refreshProfile]);
 
   return (
     <AuthContext.Provider value={value}>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
 import { getCampaigns } from '../apis/campaigns';
+import { getNGOStats, getNGODonations } from '../apis/donations';
 import '../style/NDashboardStyle.css';
 
 /**
@@ -21,18 +22,36 @@ const NDashboard = () => {
     const { user } = useAuth();
     const { loading, error, fetchData } = useFetch();
     const [campaigns, setCampaigns] = useState([]);
+    const [stats, setStats] = useState({ totalDonations: 0, campaignsCount: 0, donorsCount: 0 });
+    const [recentDonations, setRecentDonations] = useState([]);
 
     /**
      * Load dashboard data from API.
      * 
-     * Why useCallback: Used in useEffect. Memoization prevents effect from
-     * re-running unnecessarily when component re-renders.
+     * Why: Fetches real backend statistics and donation history, replacing previous placeholders.
      */
     const loadDashboardData = useCallback(async () => {
         try {
-            const response = await fetchData(getCampaigns);
-            if (response.campaigns) {
-                setCampaigns(response.campaigns);
+            // 1. Fetch Campaigns
+            const campaignsRes = await fetchData(getCampaigns);
+            if (campaignsRes.campaigns) {
+                setCampaigns(campaignsRes.campaigns);
+            }
+
+            // 2. Fetch Aggregated Stats
+            const statsRes = await fetchData(getNGOStats);
+            if (statsRes) {
+                setStats({
+                    totalDonations: statsRes.totalRaised || 0,
+                    campaignsCount: statsRes.activeCampaignsCount || 0,
+                    donorsCount: statsRes.donorsCount || 0
+                });
+            }
+
+            // 3. Fetch Recent Donations
+            const donationsRes = await fetchData(getNGODonations);
+            if (donationsRes.donations) {
+                setRecentDonations(donationsRes.donations.slice(0, 5));
             }
         } catch (err) {
             console.error('Failed to load dashboard data:', err);
@@ -52,18 +71,9 @@ const NDashboard = () => {
         return () => { document.body.className = ''; };
     }, [user, navigate, loadDashboardData]); // Include all dependencies
 
-    const stats = useMemo(() => {
-        const totalDonations = campaigns.reduce((acc, c) => acc + (c.raisedAmount || 0), 0);
-        const campaignsCount = campaigns.length;
-        const topCampaign = campaigns.length > 0
-            ? campaigns.reduce((prev, current) => (prev.raisedAmount > current.raisedAmount) ? prev : current)
-            : null;
-
-        return {
-            totalDonations,
-            campaignsCount,
-            topCampaign
-        };
+    const topCampaign = useMemo(() => {
+        if (campaigns.length === 0) return null;
+        return campaigns.reduce((prev, current) => (prev.raisedAmount > current.raisedAmount) ? prev : current);
     }, [campaigns]);
 
     if (loading && campaigns.length === 0) return <div className="dashboard-container">Loading...</div>;
@@ -86,10 +96,10 @@ const NDashboard = () => {
                             <div className="stat-value">{stats.campaignsCount}</div>
                             <div className="stat-label">Active Campaigns</div>
                         </div>
-                        {/* Donors and Avg are placeholders for now as backend lacks total stats endpoint */}
+                        {/* Data Integration: Real donor count from backend */}
                         <div className="stat-item">
-                            <div className="stat-value">-</div>
-                            <div className="stat-label">Donors</div>
+                            <div className="stat-value">{stats.donorsCount}</div>
+                            <div className="stat-label">Unique Donors</div>
                         </div>
                         <div className="stat-item">
                             <div className="stat-value">
@@ -98,10 +108,10 @@ const NDashboard = () => {
                             <div className="stat-label">Avg. per Campaign (ETB)</div>
                         </div>
                     </div>
-                    {stats.topCampaign && (
+                    {topCampaign && (
                         <div className="mt-6 text-center">
                             <div style={{ fontWeight: 600 }}>Top Campaign:</div>
-                            <div>{stats.topCampaign.title} ({stats.topCampaign.raisedAmount.toLocaleString()} ETB)</div>
+                            <div>{topCampaign.title} ({topCampaign.raisedAmount.toLocaleString()} ETB)</div>
                         </div>
                     )}
                 </div>
@@ -151,27 +161,33 @@ const NDashboard = () => {
             <div id="donations-section" className="section-card">
                 <h4 className="section-title">Recent Activity</h4>
                 <div className="table-wrapper">
-                    {/* Placeholder table since backend lacks global donation feed for NGO */}
-                    <table className="donation-table">
-                        <thead>
-                            <tr>
-                                <th>Status</th>
-                                <th>Campaign</th>
-                                <th>Goal</th>
-                                <th>Progress</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {campaigns.slice(0, 5).map(c => (
-                                <tr key={c._id}>
-                                    <td><span className={`status-badge ${c.status?.toLowerCase() || 'active'}`}>{c.status || 'Active'}</span></td>
-                                    <td>{c.title}</td>
-                                    <td>{c.targetAmount.toLocaleString()} ETB</td>
-                                    <td>{((c.raisedAmount / c.targetAmount) * 100).toFixed(1)}%</td>
+                    {/* Data Integration: Real recent donations from backend */}
+                    {recentDonations.length > 0 ? (
+                        <table className="donation-table">
+                            <thead>
+                                <tr>
+                                    <th>Donor</th>
+                                    <th>Campaign</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {recentDonations.map(d => (
+                                    <tr key={d._id}>
+                                        <td>{d.isAnnonymous ? 'Anonymous' : (d.donorName || d.donorId?.name || 'Guest')}</td>
+                                        <td>{d.campaignId?.title || 'Unknown'}</td>
+                                        <td>{d.amount.toLocaleString()} ETB</td>
+                                        <td>{new Date(d.createdAt).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af' }}>
+                            No recent donations found.
+                        </div>
+                    )}
                 </div>
                 <div className="mt-6 text-center">
                     <Link to="/donations" className="show-donations-btn">

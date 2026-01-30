@@ -1,21 +1,27 @@
 import { getAllNGOs, getNGOById, updateNGO, uploadNgoBanner } from "../controllers/NGOController.js";
+import { getNGODashboardStats } from "../controllers/donationController.js";
 import { auth } from "../middleware/authMiddleware.js";
 
-export default async function ngoRoutes(req,res,pathname){
-    if(req.method === 'GET' && pathname === '/api/ngo'){
-        await getAllNGOs(req,res);
+export default async function ngoRoutes(req, res, pathname) {
+    if (req.method === 'GET' && pathname === '/api/ngo/stats') {
+        if (!auth(req, res)) return false;
+        await getNGODashboardStats(req, res);
         return true;
     }
-    if(req.method === 'GET' && pathname.startsWith('/api/ngo/')){
-        await getNGOById(req,res);
+    if (req.method === 'GET' && pathname === '/api/ngo') {
+        await getAllNGOs(req, res);
         return true;
     }
-    if(req.method === 'PUT' && pathname === '/api/ngo'){
-        if(!auth(req,res)) return false;
-        await updateNGO(req,res);
+    if (req.method === 'GET' && pathname.startsWith('/api/ngo/')) {
+        await getNGOById(req, res);
         return true;
     }
-    if (req.method === "POST" && pathname ==="/api/ngo/banner/") {
+    if (req.method === 'PUT' && pathname === '/api/ngo') {
+        if (!auth(req, res)) return false;
+        await updateNGO(req, res);
+        return true;
+    }
+    if (req.method === "POST" && pathname === "/api/ngo/banner/") {
         if (!auth(req, res)) return true;
 
         const id = pathname.split("/").filter(Boolean)[3];
