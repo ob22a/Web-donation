@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../style/drawer.css';
 
+/**
+ * Sidebar/Drawer component - profile menu that slides in from the side.
+ * 
+ * Architecture: Displays user profile information and navigation links.
+ * Only shown when user is logged in. Overlay closes drawer when clicked.
+ * 
+ * Accessibility: Uses aria-hidden to indicate drawer state to screen readers.
+ */
 const Sidebar = ({ isOpen, onToggleDrawer }) => {
     const { logout, user } = useAuth();
+
+    /**
+     * Handle logout and close drawer.
+     * 
+     * Why useCallback: This function is passed to onClick handlers.
+     * Memoization prevents unnecessary re-renders if Sidebar is memoized.
+     */
+    const handleLogout = useCallback(() => {
+        logout();
+        onToggleDrawer();
+    }, [logout, onToggleDrawer]);
 
     return (
         <>
@@ -39,7 +58,7 @@ const Sidebar = ({ isOpen, onToggleDrawer }) => {
                         {/* <Link to="/notifications">Notifications</Link> */}
                         <button type="button">Theme 🌞/🌙</button>
                         {/* <Link to="#">Need help?</Link> */}
-                        <button type="button" onClick={() => { logout(); onToggleDrawer(); }}>Logout</button>
+                        <button type="button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
             </aside>

@@ -1,10 +1,20 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import useFetch from "../hooks/useFetch";
 import { getMyDonations } from "../apis/donations";
 import "../style/DonorDashboard.css";
 
+/**
+ * Donor Dashboard - displays donation history and statistics for authenticated donor.
+ * 
+ * Architecture: Shows total donated amount, donation history, and preference settings.
+ * 
+ * Performance optimizations:
+ * - useMemo for calculated total
+ * - useCallback for data loading function
+ * - Proper useEffect dependencies
+ */
 const DonorDashboard = () => {
   const { user } = useAuth();
   const { loading, error, fetchData } = useFetch();
@@ -16,19 +26,26 @@ const DonorDashboard = () => {
   const [reminder, setReminder] = useState(user?.preference?.ngoUpdates ?? true);
   const [expiringCards, setExpiringCards] = useState(true);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await fetchData(getMyDonations);
-        if (response.donations) {
-          setDonations(response.donations);
-        }
-      } catch (err) {
-        console.error('Failed to load dashboard data:', err);
+  /**
+   * Load donation data from API.
+   * 
+   * Why useCallback: Used in useEffect. Memoization prevents effect from
+   * re-running unnecessarily when component re-renders.
+   */
+  const loadData = useCallback(async () => {
+    try {
+      const response = await fetchData(getMyDonations);
+      if (response.donations) {
+        setDonations(response.donations);
       }
-    };
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    }
+  }, [fetchData]);
+
+  useEffect(() => {
     if (user) loadData();
-  }, [user, fetchData]);
+  }, [user, loadData]); // Depend on memoized loadData instead of fetchData
 
   const totalDonated = useMemo(() => {
     return donations.reduce((acc, d) => acc + (d.amount || 0), 0);

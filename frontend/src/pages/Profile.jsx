@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
 import { updateProfile } from '../apis/profile';
@@ -8,10 +8,27 @@ import Toast from '../components/Toast';
 import '../style/profile.css';
 import '../style/drawer.css';
 
+/**
+ * Profile page component - allows users to manage their profile information.
+ * 
+ * Architecture: Large component handling multiple form sections (personal info,
+ * preferences, security, payment methods, organization details). Uses collapsible
+ * sections to organize the UI.
+ * 
+ * Performance optimizations:
+ * - useCallback for all event handlers to prevent unnecessary re-renders
+ * - useMemo for derived values (isNGO, banks array)
+ * - Proper useEffect dependencies to prevent stale closures
+ * 
+ * State management: Local form state synced with auth context user object.
+ * Changes are saved to backend and then reflected in auth context.
+ */
 const Profile = () => {
     const { user, login } = useAuth();
     const { loading, error, fetchData } = useFetch();
-    const isNGO = user?.role === 'ngo';
+    
+    // Memoize derived value to avoid recalculating on every render
+    const isNGO = useMemo(() => user?.role === 'ngo', [user?.role]);
 
     const [collapsed, setCollapsed] = useState({
         personal: false,
@@ -61,11 +78,18 @@ const Profile = () => {
     const [isAddEmailOpen, setIsAddEmailOpen] = useState(false);
     const [tempEmail, setTempEmail] = useState('');
 
-    // Sync local state when user changes
+    // Memoize banks array - static data shouldn't be recreated on every render
+    const banks = useMemo(() => ['Telebirr', 'CBE', 'Awash Bank', 'Abyssinia Bank', 'Zemen Bank'], []);
+
+    /**
+     * Sync local state when user changes.
+     * 
+     * Why only user in deps: isNGO is derived from user.role, so including it
+     * would cause the effect to run twice when user changes. We only need to
+     * sync when user object changes.
+     */
     useEffect(() => {
         if (user) {
-            console.log('Profile - User role:', user.role, 'isNGO:', isNGO, 'Full user:', user);
-
             setPersonalInfo({
                 name: user.name || '',
                 phoneNumber: user.phoneNumber || '',
@@ -89,13 +113,26 @@ const Profile = () => {
                 });
             }
         }
-    }, [user, isNGO]);
+    }, [user]); // Only depend on user, not isNGO (derived value)
 
-    const toggleCard = (card) => {
+    /**
+     * Toggle card collapse state.
+     * 
+     * Why useCallback: This function is passed to multiple onClick handlers.
+     * Without memoization, it would be recreated on every render, causing
+     * child components to re-render unnecessarily.
+     */
+    const toggleCard = useCallback((card) => {
         setCollapsed(prev => ({ ...prev, [card]: !prev[card] }));
-    };
+    }, []); // No deps: setState function is stable
 
-    const handleSavePersonal = async (e) => {
+    /**
+     * Handle personal information save.
+     * 
+     * Why useCallback: Used in form onSubmit. Memoization prevents form
+     * from re-rendering unnecessarily when other state changes.
+     */
+    const handleSavePersonal = useCallback(async (e) => {
         e.preventDefault();
         try {
             const response = await fetchData(updateProfile, personalInfo);
@@ -107,9 +144,14 @@ const Profile = () => {
         } catch (err) {
             console.error('Update profile error:', err);
         }
-    };
+    }, [personalInfo, fetchData, login]);
 
-    const handleSavePreferences = async () => {
+    /**
+     * Handle preferences save.
+     * 
+     * Why useCallback: Used in onClick handler. Prevents unnecessary re-renders.
+     */
+    const handleSavePreferences = useCallback(async () => {
         try {
             const response = await fetchData(updateProfile, { preference: preferences });
             if (response.user) {
@@ -120,9 +162,14 @@ const Profile = () => {
         } catch (err) {
             console.error('Update preferences error:', err);
         }
-    };
+    }, [preferences, fetchData, login]);
 
-    const handleSaveNGOInfo = async (e) => {
+    /**
+     * Handle NGO information save.
+     * 
+     * Why useCallback: Used in form onSubmit. Prevents unnecessary re-renders.
+     */
+    const handleSaveNGOInfo = useCallback(async (e) => {
         e.preventDefault();
         try {
             const response = await fetchData(updateProfile, ngoInfo);
@@ -134,9 +181,14 @@ const Profile = () => {
         } catch (err) {
             console.error('Update NGO info error:', err);
         }
-    };
+    }, [ngoInfo, fetchData, login]);
 
-    const handlePasswordChange = async (e) => {
+    /**
+     * Handle password change.
+     * 
+     * Why useCallback: Used in form onSubmit. Prevents unnecessary re-renders.
+     */
+    const handlePasswordChange = useCallback(async (e) => {
         e.preventDefault();
         try {
             if (passwords.newPassword !== passwords.confirmPassword) {
@@ -154,15 +206,25 @@ const Profile = () => {
         } catch (err) {
             console.error('Password change error:', err);
         }
-    };
+    }, [passwords, fetchData]);
 
-    const handleAddEmail = (e) => {
+    /**
+     * Handle secondary email add.
+     * 
+     * Why useCallback: Used in form onSubmit. Prevents unnecessary re-renders.
+     */
+    const handleAddEmail = useCallback((e) => {
         e.preventDefault();
         setPersonalInfo(prev => ({ ...prev, secondaryEmail: tempEmail }));
         setIsAddEmailOpen(false);
-    };
+    }, [tempEmail]);
 
-    const handleAddMethod = async (e) => {
+    /**
+     * Handle payment method add.
+     * 
+     * Why useCallback: Used in form onSubmit. Prevents unnecessary re-renders.
+     */
+    const handleAddMethod = useCallback(async (e) => {
         e.preventDefault();
         try {
             const methodPayload = {
@@ -184,9 +246,14 @@ const Profile = () => {
         } catch (err) {
             console.error('Add payment method error:', err);
         }
-    };
+    }, [newMethod, paymentMethods.length, fetchData, login]);
 
-    const handleBannerUpload = async (e) => {
+    /**
+     * Handle NGO banner upload.
+     * 
+     * Why useCallback: Used in file input onChange. Prevents unnecessary re-renders.
+     */
+    const handleBannerUpload = useCallback(async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -203,9 +270,14 @@ const Profile = () => {
         } catch (err) {
             console.error('Banner upload error:', err);
         }
-    };
+    }, [user, fetchData, login]);
 
-    const handleAvatarUpload = async (e) => {
+    /**
+     * Handle profile picture upload.
+     * 
+     * Why useCallback: Used in file input onChange. Prevents unnecessary re-renders.
+     */
+    const handleAvatarUpload = useCallback(async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -222,15 +294,64 @@ const Profile = () => {
         } catch (err) {
             console.error('Avatar upload error:', err);
         }
-    };
+    }, [user, fetchData, login]);
 
-    const banks = ['Telebirr', 'CBE', 'Awash Bank', 'Abyssinia Bank', 'Zemen Bank'];
+    // Memoize user initials calculation
+    const userInitials = useMemo(() => {
+        return user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    }, [user?.name]);
+
+    // Memoize close handlers to prevent Toast re-renders
+    const handleCloseToast = useCallback(() => {
+        setShowToast(false);
+    }, []);
+
+    const handleCloseAddMethod = useCallback(() => {
+        setIsAddMethodOpen(false);
+    }, []);
+
+    const handleCloseAddEmail = useCallback(() => {
+        setIsAddEmailOpen(false);
+    }, []);
+
+    // Memoize handlers for secondary email button
+    const handleOpenAddEmail = useCallback(() => {
+        setTempEmail('');
+        setIsAddEmailOpen(true);
+    }, []);
+
+    const handleChangeEmail = useCallback(() => {
+        setTempEmail(personalInfo.secondaryEmail);
+        setIsAddEmailOpen(true);
+    }, [personalInfo.secondaryEmail]);
 
     if (!user) return <div className="profile-page-wrapper">Loading...</div>;
 
+    // Extract inline styles to constants to prevent object recreation
+    const avatarImageStyle = { objectFit: 'cover' };
+    const uploadLabelStyle = { cursor: 'pointer' };
+    const emailMetaStyle = { marginTop: '0.5rem', fontWeight: 500, color: 'var(--primary-text)' };
+    const buttonRowStyle = { gridColumn: '1 / -1', marginTop: '1.25rem' };
+    const bannerContainerStyle = { display: 'flex', gap: '1rem', alignItems: 'center' };
+    const bannerImageStyle = { width: '120px', height: '80px', objectFit: 'cover', borderRadius: '0.5rem' };
+    const uploadButtonStyle = { cursor: 'pointer', margin: 0 };
+    const paymentHeaderStyle = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' };
+    const paymentItemStyle = { padding: '1rem', background: '#f9fafb', borderRadius: '0.5rem', border: '1px solid #eef2f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
+    const defaultBadgeStyle = { color: 'var(--primary-green)', fontWeight: 600 };
+    const modalContentStyle = { maxWidth: '400px' };
+    const modalTitleStyle = { color: 'var(--primary-green)', marginBottom: '1.5rem', textAlign: 'center' };
+    const formGroupStyle = { marginBottom: '1rem' };
+    const formGroupLargeStyle = { marginBottom: '1.5rem' };
+    const inputStyle = { width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eef2f0' };
+    const modalActionsStyle = { display: 'flex', gap: '1rem' };
+    const buttonFlex1Style = { flex: 1 };
+    const buttonFlex2Style = { flex: 2 };
+    const statsMarginStyle = { marginTop: '0.75rem' };
+    const fieldFullWidthStyle = { gridColumn: '1 / -1' };
+
     return (
         <div className="profile-page-wrapper">
-            {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
+            {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
             {error && <div className="api-error-banner">{error}</div>}
 
             <main className="page-content">
@@ -242,11 +363,11 @@ const Profile = () => {
                             <div className="profile-avatar-wrapper">
                                 <div className="profile-avatar">
                                     {user.profilePicture ? (
-                                        <img src={user.profilePicture} alt="Avatar" className="profile-avatar-circle" style={{ objectFit: 'cover' }} />
+                                        <img src={user.profilePicture} alt="Avatar" className="profile-avatar-circle" style={avatarImageStyle} />
                                     ) : (
-                                        <div className="profile-avatar-circle">{user.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</div>
+                                        <div className="profile-avatar-circle">{userInitials}</div>
                                     )}
-                                    <label className="profile-avatar-upload" title="Upload image" style={{ cursor: 'pointer' }}>
+                                    <label className="profile-avatar-upload" title="Upload image" style={uploadLabelStyle}>
                                         <input type="file" hidden onChange={handleAvatarUpload} accept="image/*" />
                                         <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M512 144v288c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V144c0-26.5 21.5-48 48-48h88l12.3-32.9c7-18.7 24.9-31.1 44.9-31.1h125.5c20 0 37.9 12.4 44.9 31.1L376 96h88c26.5 0 48 21.5 48 48zM376 288c0-66.2-53.8-120-120-120s-120 53.8-120 120 53.8 120 120 120 120-53.8 120-120zm-32 0c0 48.5-39.5 88-88 88s-88-39.5-88-88 39.5-88 88-88 88 39.5 88 88z"></path>
@@ -264,7 +385,7 @@ const Profile = () => {
                                     <div className="profile-stat-label">Total donated</div>
                                     <div className="profile-stat-value">ETB {user.totalDonated || 0}</div>
                                 </div>
-                                <div style={{ marginTop: '0.75rem' }}>
+                                <div style={statsMarginStyle}>
                                     <div className="profile-stat-label">Campaigns supported</div>
                                     <div className="profile-stat-value">{user.campaignsSupportedCount || 0}</div>
                                 </div>
@@ -293,12 +414,12 @@ const Profile = () => {
                                                 <div className="profile-email-meta">Secondary</div>
                                                 <div className="profile-button-row">
                                                     {personalInfo.secondaryEmail ? (
-                                                        <div className="profile-email-meta" style={{ marginTop: '0.5rem', fontWeight: 500, color: 'var(--primary-text)' }}>
+                                                        <div className="profile-email-meta" style={emailMetaStyle}>
                                                             {personalInfo.secondaryEmail}
-                                                            <button type="button" className="profile-link-button ml-2" onClick={() => { setTempEmail(personalInfo.secondaryEmail); setIsAddEmailOpen(true); }} style={{ fontSize: '0.8rem' }}>Change</button>
+                                                            <button type="button" className="profile-link-button ml-2" onClick={handleChangeEmail} style={{ fontSize: '0.8rem' }}>Change</button>
                                                         </div>
                                                     ) : (
-                                                        <button type="button" className="profile-save-button" onClick={() => { setTempEmail(''); setIsAddEmailOpen(true); }}>
+                                                        <button type="button" className="profile-save-button" onClick={handleOpenAddEmail}>
                                                             + Add secondary email
                                                         </button>
                                                     )}
@@ -317,7 +438,7 @@ const Profile = () => {
                                                 <label htmlFor="city">City</label>
                                                 <input id="city" className="profile-input" type="text" value={personalInfo.city} onChange={e => setPersonalInfo({ ...personalInfo, city: e.target.value })} />
                                             </div>
-                                            <div className="profile-button-row" style={{ gridColumn: '1 / -1', marginTop: '1.25rem' }}>
+                                            <div className="profile-button-row" style={buttonRowStyle}>
                                                 <button type="submit" className="profile-save-button" disabled={loading}>
                                                     {loading ? 'Saving...' : 'Save changes'}
                                                 </button>
@@ -428,27 +549,27 @@ const Profile = () => {
                                                         <option value="education">Education</option>
                                                     </select>
                                                 </div>
-                                                <div className="profile-field" style={{ gridColumn: '1 / -1' }}>
+                                                <div className="profile-field" style={fieldFullWidthStyle}>
                                                     <label htmlFor="description">Mission Statement</label>
                                                     <input id="description" className="profile-input" type="text" value={ngoInfo.description} onChange={e => setNgoInfo({ ...ngoInfo, description: e.target.value })} />
                                                 </div>
-                                                <div className="profile-field" style={{ gridColumn: '1 / -1' }}>
+                                                <div className="profile-field" style={fieldFullWidthStyle}>
                                                     <label htmlFor="story">Full Story / History</label>
                                                     <textarea id="story" className="profile-input" rows="4" value={ngoInfo.story} onChange={e => setNgoInfo({ ...ngoInfo, story: e.target.value })} />
                                                 </div>
-                                                <div className="profile-field" style={{ gridColumn: '1 / -1' }}>
+                                                <div className="profile-field" style={fieldFullWidthStyle}>
                                                     <label>Organization Banner</label>
-                                                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                    <div style={bannerContainerStyle}>
                                                         {user.bannerImage && (
-                                                            <img src={user.bannerImage} alt="NGO Banner" style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '0.5rem' }} />
+                                                            <img src={user.bannerImage} alt="NGO Banner" style={bannerImageStyle} />
                                                         )}
-                                                        <label className="profile-save-button" style={{ cursor: 'pointer', margin: 0 }}>
+                                                        <label className="profile-save-button" style={uploadButtonStyle}>
                                                             <input type="file" hidden onChange={handleBannerUpload} accept="image/*" />
                                                             Upload Banner
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div className="profile-button-row" style={{ gridColumn: '1 / -1', marginTop: '1.25rem' }}>
+                                                <div className="profile-button-row" style={buttonRowStyle}>
                                                     <button type="submit" className="profile-save-button" disabled={loading}>
                                                         {loading ? 'Saving...' : 'Save Organization Details'}
                                                     </button>
@@ -475,7 +596,7 @@ const Profile = () => {
                                         <div className="profile-card-body">
                                             <div className="profile-payment-content">
                                                 <div className="profile-payment-section">
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                    <div style={paymentHeaderStyle}>
                                                         <h4>Saved Payment Methods</h4>
                                                         <button type="button" className="profile-payment-add-button" onClick={() => setIsAddMethodOpen(true)}>
                                                             <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -486,9 +607,9 @@ const Profile = () => {
                                                     </div>
                                                     <div className="pm-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                                         {paymentMethods.length > 0 ? paymentMethods.map((pm, idx) => (
-                                                            <div key={idx} className="pm-item" style={{ padding: '1rem', background: '#f9fafb', borderRadius: '0.5rem', border: '1px solid #eef2f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <div key={idx} className="pm-item" style={paymentItemStyle}>
                                                                 <span>{pm.type} ({pm.identifier.length > 4 ? `**** ${pm.identifier.slice(-4)}` : pm.identifier})</span>
-                                                                {pm.isDefault && <span style={{ color: 'var(--primary-green)', fontWeight: 600 }}>Default</span>}
+                                                                {pm.isDefault && <span style={defaultBadgeStyle}>Default</span>}
                                                             </div>
                                                         )) : <p>No payment methods saved.</p>}
                                                     </div>
@@ -505,16 +626,16 @@ const Profile = () => {
 
             {/* Add Payment Method Modal */}
             {isAddMethodOpen && (
-                <div className="modal-overlay open" onClick={() => setIsAddMethodOpen(false)}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
-                        <h2 className="dashboard-title" style={{ color: 'var(--primary-green)', marginBottom: '1.5rem', textAlign: 'center' }}>
+                <div className="modal-overlay open" onClick={handleCloseAddMethod}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={modalContentStyle}>
+                        <h2 className="dashboard-title" style={modalTitleStyle}>
                             Add Payment Method
                         </h2>
                         <form className="create-form" onSubmit={handleAddMethod}>
-                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                            <div className="form-group" style={formGroupStyle}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Select Method</label>
                                 <select
-                                    style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eef2f0' }}
+                                    style={inputStyle}
                                     value={newMethod.type}
                                     onChange={(e) => setNewMethod({ ...newMethod, type: e.target.value })}
                                 >
@@ -522,7 +643,7 @@ const Profile = () => {
                                 </select>
                             </div>
 
-                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                            <div className="form-group" style={formGroupLargeStyle}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
                                     {newMethod.type === 'Telebirr' ? 'Phone Number' : 'Bank Account Number'}
                                 </label>
@@ -532,15 +653,15 @@ const Profile = () => {
                                     required
                                     value={newMethod.identifier}
                                     onChange={(e) => setNewMethod({ ...newMethod, identifier: e.target.value })}
-                                    style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eef2f0' }}
+                                    style={inputStyle}
                                 />
                             </div>
 
-                            <div className="modal-actions" style={{ display: 'flex', gap: '1rem' }}>
-                                <button type="button" className="modal-close-button" onClick={() => setIsAddMethodOpen(false)} style={{ flex: 1 }}>
+                            <div className="modal-actions" style={modalActionsStyle}>
+                                <button type="button" className="modal-close-button" onClick={handleCloseAddMethod} style={buttonFlex1Style}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="modal-submit-button" style={{ flex: 2 }} disabled={loading}>
+                                <button type="submit" className="modal-submit-button" style={buttonFlex2Style} disabled={loading}>
                                     {loading ? 'Adding...' : 'Add Method'}
                                 </button>
                             </div>
@@ -551,13 +672,13 @@ const Profile = () => {
 
             {/* Add Secondary Email Modal */}
             {isAddEmailOpen && (
-                <div className="modal-overlay open" onClick={() => setIsAddEmailOpen(false)}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
-                        <h2 className="dashboard-title" style={{ color: 'var(--primary-green)', marginBottom: '1.5rem', textAlign: 'center' }}>
+                <div className="modal-overlay open" onClick={handleCloseAddEmail}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={modalContentStyle}>
+                        <h2 className="dashboard-title" style={modalTitleStyle}>
                             Add Secondary Email
                         </h2>
                         <form className="create-form" onSubmit={handleAddEmail}>
-                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                            <div className="form-group" style={formGroupLargeStyle}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Email Address</label>
                                 <input
                                     type="email"
@@ -565,15 +686,15 @@ const Profile = () => {
                                     required
                                     value={tempEmail}
                                     onChange={(e) => setTempEmail(e.target.value)}
-                                    style={{ width: '100%', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #eef2f0' }}
+                                    style={inputStyle}
                                 />
                             </div>
 
-                            <div className="modal-actions" style={{ display: 'flex', gap: '1rem' }}>
-                                <button type="button" className="modal-close-button" onClick={() => setIsAddEmailOpen(false)} style={{ flex: 1 }}>
+                            <div className="modal-actions" style={modalActionsStyle}>
+                                <button type="button" className="modal-close-button" onClick={handleCloseAddEmail} style={buttonFlex1Style}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="modal-submit-button" style={{ flex: 2 }}>
+                                <button type="submit" className="modal-submit-button" style={buttonFlex2Style}>
                                     Confirm
                                 </button>
                             </div>

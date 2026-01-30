@@ -1,25 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../style/header.css';
 
+/**
+ * Header component - main navigation bar.
+ * 
+ * Architecture: Displays different navigation links based on authentication status
+ * and user role (donor vs NGO). Includes mobile menu toggle and profile drawer trigger.
+ * 
+ * Responsive behavior: Mobile menu (hamburger) shown when not logged in.
+ * Profile icon shown when logged in, opens sidebar drawer.
+ */
 const Header = ({ onToggleDrawer }) => {
     const { isLoggedIn, logout, user } = useAuth();
     const [isNavOpen, setIsNavOpen] = useState(false);
     const navigate = useNavigate();
 
-    const toggleNav = () => {
-        setIsNavOpen(!isNavOpen);
-    };
+    /**
+     * Toggle mobile navigation menu.
+     * 
+     * Why useCallback: This function is used in onClick handlers.
+     * Memoization prevents unnecessary re-renders if Header is memoized.
+     */
+    const toggleNav = useCallback(() => {
+        setIsNavOpen(prev => !prev);
+    }, []); // No deps: setState function is stable
 
-    const handleLogout = () => {
+    /**
+     * Handle logout and redirect to login page.
+     * 
+     * Why useCallback: Used in onClick handler. Memoization ensures
+     * stable reference across re-renders.
+     */
+    const handleLogout = useCallback(() => {
         logout();
         navigate('/login');
-    };
+    }, [logout, navigate]); // Depend on logout and navigate
 
+    // Derive user role flags for conditional rendering
     const isDonor = user?.role === 'donor';
     const isNGO = user?.role === 'ngo';
 
+    // Logo redirects to dashboard for NGOs, home for others
     const logoRedirect = isNGO ? '/dashboard' : '/';
 
     return (

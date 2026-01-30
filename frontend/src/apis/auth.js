@@ -1,6 +1,14 @@
 import { VITE_APP_API_URI } from "./constants.js";
 
-// {{base_url}}/auth/login data = email and password 
+/**
+ * Authentication API functions.
+ * 
+ * Architecture: All auth-related API calls (login, register, profile, logout, uploads).
+ * Uses credentials: "include" to send/receive HttpOnly cookies for authentication.
+ */
+
+// POST {{base_url}}/auth/login
+// Login user with email and password
 
 export const loginUser = async (data) => {
     const res = await fetch(`${VITE_APP_API_URI}/auth/login`, {
@@ -41,5 +49,26 @@ export const logoutUser = async () => {
         method: 'POST',
         credentials: "include"
     })
+    return res.json()
+}
+
+// POST {{base_url}}/auth/profile-picture
+// Upload profile picture for authenticated user (donor or NGO)
+// 
+// Why this endpoint: Backend uses /api/auth/profile-picture which works for both
+// donors and NGOs. The auth middleware extracts user ID from JWT token, so no
+// need to pass user ID in the request.
+
+export const uploadProfilePicture = async (formData) => {
+    const res = await fetch(`${VITE_APP_API_URI}/auth/profile-picture`, {
+        method: 'POST',
+        body: formData, // FormData with file - don't set Content-Type header (browser sets it with boundary)
+        credentials: "include" // Include HttpOnly auth cookie
+    })
+
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Upload failed");
+    }
     return res.json()
 }

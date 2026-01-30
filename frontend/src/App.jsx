@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './Layout';
 import Home from './pages/Home';
 import AllDonations from './pages/AllDonations';
@@ -16,11 +16,27 @@ import MyCampaigns from './pages/MyCampaigns';
 import DonorDashboard from './pages/DonorDashboard';
 import { AuthProvider } from './context/AuthContext';
 
+/**
+ * Main App component - root of the React application.
+ * 
+ * Architecture:
+ * - AuthProvider wraps entire app to provide auth context to all components
+ * - BrowserRouter enables client-side routing
+ * - Layout component provides consistent structure (Header, Sidebar)
+ * - Nested Routes render page components within Layout
+ * 
+ * Route structure:
+ * - All routes are nested under "/" with Layout as parent
+ * - Index route ("/") renders Home component
+ * - Dynamic routes use params (e.g., "/campaign/:id")
+ * - Separate routes for donor and NGO dashboards
+ */
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Layout wraps all routes, providing Header and Sidebar */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="login" element={<Login />} />

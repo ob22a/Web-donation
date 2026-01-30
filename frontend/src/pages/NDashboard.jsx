@@ -1,37 +1,56 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
 import { getCampaigns } from '../apis/campaigns';
 import '../style/NDashboardStyle.css';
 
+/**
+ * NGO Dashboard - displays statistics and campaigns for authenticated NGO.
+ * 
+ * Architecture: Shows total donations, campaign count, and list of campaigns.
+ * Redirects to profile setup if NGO hasn't completed their profile.
+ * 
+ * Performance optimizations:
+ * - useMemo for calculated stats
+ * - useCallback for data loading function
+ * - Proper useEffect dependencies
+ */
 const NDashboard = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { loading, error, fetchData } = useFetch();
     const [campaigns, setCampaigns] = useState([]);
 
+    /**
+     * Load dashboard data from API.
+     * 
+     * Why useCallback: Used in useEffect. Memoization prevents effect from
+     * re-running unnecessarily when component re-renders.
+     */
+    const loadDashboardData = useCallback(async () => {
+        try {
+            const response = await fetchData(getCampaigns);
+            if (response.campaigns) {
+                setCampaigns(response.campaigns);
+            }
+        } catch (err) {
+            console.error('Failed to load dashboard data:', err);
+        }
+    }, [fetchData]);
+
     useEffect(() => {
         document.body.className = 'page-dashboard';
 
+        // Redirect to profile setup if NGO hasn't completed profile
         if (user && user.role === 'ngo' && !user.ngoName) {
             navigate('/ngo-profile-setup');
             return;
         }
 
-        const loadDashboardData = async () => {
-            try {
-                const response = await fetchData(getCampaigns);
-                if (response.campaigns) {
-                    setCampaigns(response.campaigns);
-                }
-            } catch (err) {
-                console.error('Failed to load dashboard data:', err);
-            }
-        };
         loadDashboardData();
         return () => { document.body.className = ''; };
-    }, [fetchData]);
+    }, [user, navigate, loadDashboardData]); // Include all dependencies
 
     const stats = useMemo(() => {
         const totalDonations = campaigns.reduce((acc, c) => acc + (c.raisedAmount || 0), 0);
