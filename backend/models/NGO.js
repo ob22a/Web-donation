@@ -6,7 +6,7 @@ const ngoSchema = new mongoose.Schema({
   description: { type: String },
   category: { type: String },
   story: { type: String },
-  bannerImage: { type: String },
+  bannerImage: { type: String }, // URL to the banner image
 });
 
 const NGO = User.discriminator("ngo", ngoSchema);

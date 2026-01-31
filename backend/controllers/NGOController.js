@@ -1,17 +1,11 @@
-// GET to get all NGOs
-// PUT to update NGO information both for the initial modal and All donations Page
-// GET /:id to get specific NGO information
-
 import NGO from "../models/NGO.js";
 import { sendJson } from "../utils/response.js";
 import formidable from "formidable";
 import cloudinary from "../config/cloudinary.js";
 import mongoose from "mongoose";
 
-// I accidentally did these 2 😅
 export async function getAllNGOs(req, res) {
   try {
-    // Logic to get all NGOs from the database
     const ngos = await NGO.find({ role: "NGO" });
     sendJson(res, 200, { ngos });
   } catch (err) {
@@ -85,8 +79,11 @@ export const uploadNgoBanner = async (req, res) => {
         return sendJson(res, 404, { message: "NGO not found" });
       }
 
-      const file = Array.isArray(files.bannerImage) ? files.bannerImage[0] : files.bannerImage;
-      if (!file) return sendJson(res, 400, { message: "No banner image provided" });
+      const file = Array.isArray(files.bannerImage)
+        ? files.bannerImage[0]
+        : files.bannerImage;
+      if (!file)
+        return sendJson(res, 400, { message: "No banner image provided" });
 
       const filePath = file.filepath;
 
@@ -110,9 +107,6 @@ export const uploadNgoBanner = async (req, res) => {
   });
 };
 
-/* ============================
-   NGO DASHBOARD STATS
-============================ */
 export async function getNGODashboardStats(req, res) {
   try {
     const ngoId = req.user?.ngoId;
@@ -121,22 +115,18 @@ export async function getNGODashboardStats(req, res) {
       return sendJson(res, 403, { message: "No NGO associated with user" });
     }
 
-    // Get all campaigns for this NGO
     const campaigns = await Campaign.find({ ngo: ngoId }).select("_id title");
     const campaignIds = campaigns.map((c) => c._id);
 
-    // Get donations for these campaigns
     const donations = await Donation.find({
       campaignId: { $in: campaignIds },
     });
 
-    // Calculate statistics
     const totalDonations = donations.length;
     const totalAmount = donations.reduce((sum, d) => sum + d.amount, 0);
     const anonymousCount = donations.filter((d) => d.isAnnonymous).length;
     const manualCount = donations.filter((d) => d.isManual).length;
 
-    // Get recent donations
     const recentDonations = donations
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 10)
@@ -148,7 +138,6 @@ export async function getNGODashboardStats(req, res) {
         manual: d.isManual,
       }));
 
-    // Get campaigns with donation counts
     const campaignsWithStats = await Promise.all(
       campaigns.map(async (campaign) => {
         const campaignDonations = donations.filter(
@@ -168,7 +157,6 @@ export async function getNGODashboardStats(req, res) {
       }),
     );
 
-    // Sort campaigns by total amount (descending)
     campaignsWithStats.sort((a, b) => b.totalAmount - a.totalAmount);
 
     return sendJson(res, 200, {

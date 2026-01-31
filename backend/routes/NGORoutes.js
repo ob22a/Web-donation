@@ -5,7 +5,7 @@ import {
   uploadNgoBanner,
 } from "../controllers/NGOController.js";
 import { getNGODashboardStats } from "../controllers/NGOController.js";
-import { auth } from "../middleware/authMiddleware.js";
+import { auth } from "../middleware/authMiddleware.js"; // NGO routes require authentication for certain endpoints
 
 export default async function ngoRoutes(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/ngo/stats") {

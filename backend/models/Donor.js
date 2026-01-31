@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "./User.js";
+import User from "./User.js"; // Import the base User model
 
 const donorSchema = new mongoose.Schema({
   totalDonated: { type: Number, default: 0 },
@@ -9,7 +9,11 @@ const donorSchema = new mongoose.Schema({
   recurringDonation: {
     enabled: { type: Boolean, default: false },
     amount: { type: Number, default: 0 },
-    frequency: { type: String, enum: ["daily", "weekly", "monthly"], default: "monthly" }
+    frequency: {
+      type: String,
+      enum: ["daily", "weekly", "monthly"],
+      default: "monthly",
+    },
   },
   preference: {
     emailReceipts: { type: Boolean, default: true },
