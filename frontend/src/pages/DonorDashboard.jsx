@@ -9,10 +9,6 @@ import { updateProfile } from "../apis/profile";
 import Toast from "../components/Toast";
 import "../style/DonorDashboard.css";
 import "../style/base.css"; // Import base styles for consistency
-
-/**
- * Saved Recurring List Component - shows actual recurring donations
- */
 function SavedRecurringList({ user, donations, onCancel, loading }) {
   const initial =
     (user && user.recurringDonations) ||
@@ -99,10 +95,6 @@ function SavedRecurringList({ user, donations, onCancel, loading }) {
     </div>
   );
 }
-
-/**
- * Campaign Card Component
- */
 function CampaignCard({ campaign }) {
   const progress = campaign.raisedAmount
     ? Math.min((campaign.raisedAmount / campaign.goalAmount) * 100, 100)
@@ -159,10 +151,6 @@ function CampaignCard({ campaign }) {
     </div>
   );
 }
-
-/**
- * NGO Card Component - Matching Landing Page Style
- */
 function NGOCard({ ngo }) {
   return (
     <div className="card ngo-card">
@@ -211,10 +199,6 @@ function NGOCard({ ngo }) {
     </div>
   );
 }
-
-/**
- * Donor Dashboard - displays donation history and statistics for authenticated donor.
- */
 const DonorDashboard = () => {
   const { user, login } = useAuth();
   const { loading, error, fetchData } = useFetch();
@@ -234,10 +218,6 @@ const DonorDashboard = () => {
     amount: user?.recurringDonation?.amount ?? 0,
     frequency: user?.recurringDonation?.frequency ?? "monthly",
   });
-
-  /**
-   * Sync local state when user object updates from AuthContext.
-   */
   useEffect(() => {
     if (user) {
       setRecurring({
@@ -247,10 +227,6 @@ const DonorDashboard = () => {
       });
     }
   }, [user]);
-
-  /**
-   * Load all dashboard data
-   */
   const loadDashboardData = useCallback(async () => {
     try {
       // Load donations
@@ -302,17 +278,9 @@ const DonorDashboard = () => {
   useEffect(() => {
     if (user) loadDashboardData();
   }, [user, loadDashboardData]);
-
-  /**
-   * Calculate total donated locally for immediate feedback.
-   */
   const totalDonated = useMemo(() => {
     return donations.reduce((acc, d) => acc + (d.amount || 0), 0);
   }, [donations]);
-
-  /**
-   * Save recurring donation settings to backend.
-   */
   const handleSaveRecurring = async () => {
     try {
       const response = await fetchData(updateProfile, {

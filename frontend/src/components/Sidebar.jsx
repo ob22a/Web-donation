@@ -2,11 +2,9 @@ import React, { useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../style/drawer.css';
-
 const Sidebar = ({ isOpen, onToggleDrawer }) => {
     const { logout, user } = useAuth();
     const navigate = useNavigate();
-
     const handleLogout = useCallback(async () => {
         await logout();
         onToggleDrawer();

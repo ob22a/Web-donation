@@ -5,18 +5,6 @@ import useFetch from '../hooks/useFetch';
 import { getCampaigns } from '../apis/campaigns';
 import { getNGOStats, getNGODonations } from '../apis/donations';
 import '../style/NDashboardStyle.css';
-
-/**
- * NGO Dashboard - displays statistics and campaigns for authenticated NGO.
- * 
- * Architecture: Shows total donations, campaign count, and list of campaigns.
- * Redirects to profile setup if NGO hasn't completed their profile.
- * 
- * Performance optimizations:
- * - useMemo for calculated stats
- * - useCallback for data loading function
- * - Proper useEffect dependencies
- */
 const NDashboard = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -24,12 +12,6 @@ const NDashboard = () => {
     const [campaigns, setCampaigns] = useState([]);
     const [stats, setStats] = useState({ totalDonations: 0, campaignsCount: 0, donorsCount: 0 });
     const [recentDonations, setRecentDonations] = useState([]);
-
-    /**
-     * Load dashboard data from API.
-     * 
-     * Why: Fetches real backend statistics and donation history, replacing previous placeholders.
-     */
     const loadDashboardData = useCallback(async () => {
         try {
             // 1. Fetch Campaigns

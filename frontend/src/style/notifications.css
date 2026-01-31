@@ -1,5 +1,3 @@
-/* Notifications page styles */
-
 .notifications-card {
   padding: 1rem;
   border-radius: 0.5rem;
@@ -75,8 +73,6 @@
   flex-direction: column;
   gap: 0.5rem;
 }
-
-/* Small responsive tweaks */
 @media (max-width: 480px) {
   .notification-item {
     flex-direction: column;

@@ -1,5 +1,6 @@
 import { VITE_APP_API_URI } from "./constants.js";
 
+
 // POST {{base_url}}/donor/profile-picture/:id
 export const uploadProfilePicture = async (donorId, formData) => {
   const res = await fetch(

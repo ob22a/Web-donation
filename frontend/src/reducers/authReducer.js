@@ -4,7 +4,6 @@ export const authInitialState = {
     loading: false,
     error: null,
 };
-
 export const authReducer = (state, action) => {
     switch (action.type) {
         case 'LOGIN_START':

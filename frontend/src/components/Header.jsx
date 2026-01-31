@@ -2,14 +2,12 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../style/header.css";
-
 const Header = ({ onToggleDrawer }) => {
   const { isLoggedIn, user } = useAuth();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const navigate = useNavigate();
   const navRef = useRef(null);
   const toggleRef = useRef(null);
-
   const toggleNav = useCallback(() => {
     setIsNavOpen((prev) => !prev);
   }, []); // No deps: setState function is stable
@@ -17,7 +15,7 @@ const Header = ({ onToggleDrawer }) => {
   // Close nav helper
   const closeNav = useCallback(() => setIsNavOpen(false), []);
 
-  // IT is closed when clicking outside the nav or pressing Escape
+  // Close when clicking outside the nav or pressing Escape
   useEffect(() => {
     function handleDocClick(e) {
       if (!isNavOpen) return;
@@ -48,7 +46,7 @@ const Header = ({ onToggleDrawer }) => {
     };
   }, [isNavOpen]);
 
-  // Deriv user role flags for conditional rendering
+  // Derive user role flags for conditional rendering
   const isDonor = user?.role === "donor";
   const isNGO = user?.role === "ngo";
 

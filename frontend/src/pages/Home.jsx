@@ -146,9 +146,6 @@ export default function Landing() {
     </div>
   );
 }
-
-/* 🔹 Small reusable components */
-
 function NGOCard({ logo, image, title, text }) {
   return (
     <div className="card ngo-card">

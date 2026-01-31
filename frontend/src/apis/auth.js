@@ -1,6 +1,7 @@
 import { VITE_APP_API_URI } from "./constants.js";
-
+// {{base_url}}/auth/login data = email and password
 // POST {{base_url}}/auth/login
+// Login user with email and password
 export const loginUser = async (data) => {
   const res = await fetch(`${VITE_APP_API_URI}/auth/login`, {
     method: "POST",
@@ -41,11 +42,16 @@ export const logoutUser = async () => {
 };
 
 // POST {{base_url}}/auth/profile-picture
+// Upload profile picture for authenticated user (donor or NGO)
+//
+// Why this endpoint: Backend uses /api/auth/profile-picture which works for both
+// donors and NGOs. The auth middleware extracts user ID from JWT token, so no
+// need to pass user ID in the request.
 export const uploadProfilePicture = async (formData) => {
   const res = await fetch(`${VITE_APP_API_URI}/auth/profile-picture`, {
     method: "POST",
-    body: formData,
-    credentials: "include",
+    body: formData, // FormData with file - don't set Content-Type header (browser sets it with boundary)
+    credentials: "include", // Include HttpOnly auth cookie
   });
 
   if (!res.ok) {

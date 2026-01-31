@@ -29,6 +29,7 @@ export const updateNGO = async (data) => {
     return res.json()
 }
 
+
 // POST {{base_url}}/ngo/banner/
 export const uploadNgoBanner = async (formData) => {
     const res = await fetch(`${VITE_APP_API_URI}/ngo/banner/`, {

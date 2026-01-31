@@ -4,31 +4,12 @@ import useFetch from '../hooks/useFetch';
 import { getCampaigns, createCampaign } from '../apis/campaigns';
 import Toast from '../components/Toast';
 import '../style/mycampaigns.css';
-
-/**
- * My Campaigns page - displays and manages campaigns for authenticated NGO.
- * 
- * Architecture: Lists all campaigns created by the logged-in NGO with filtering
- * by status. Allows creating new campaigns via modal form.
- * 
- * Performance optimizations:
- * - useCallback for event handlers
- * - useMemo for filtered campaigns list
- * - Proper useEffect dependencies
- */
 const MyCampaigns = () => {
     const { loading, error, fetchData } = useFetch();
     const [campaigns, setCampaigns] = useState([]);
     const [filter, setFilter] = useState('All');
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
-
-    /**
-     * Load campaigns from API.
-     * 
-     * Why useCallback: Used in useEffect. Memoization prevents effect from
-     * re-running unnecessarily when component re-renders.
-     */
     const loadCampaigns = useCallback(async () => {
         try {
             const response = await fetchData(getCampaigns);
@@ -45,24 +26,11 @@ const MyCampaigns = () => {
         loadCampaigns();
         return () => { document.body.className = ''; };
     }, [loadCampaigns]); // Depend on memoized loadCampaigns
-
-    /**
-     * Filter campaigns by status.
-     * 
-     * Why useMemo: Filtering runs on every render when campaigns or filter changes.
-     * Memoization prevents unnecessary re-filtering when other state updates.
-     */
     const filteredCampaigns = useMemo(() => {
         return campaigns.filter(c =>
             filter === 'All' ? true : c.status?.toLowerCase() === filter.toLowerCase()
         );
     }, [campaigns, filter]);
-
-    /**
-     * Handle campaign creation.
-     * 
-     * Why useCallback: Used in form onSubmit. Prevents unnecessary re-renders.
-     */
     const handleCreate = useCallback(async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);

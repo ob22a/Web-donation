@@ -1,9 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import '../style/components/Toast.css';
-
-/*
-    Toast notification component that automatically dismisses after 3 seconds.
- */
 const Toast = ({ message, onClose }) => {
     const onCloseRef = useRef(onClose);
     

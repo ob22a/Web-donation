@@ -1,6 +1,7 @@
 import { VITE_APP_API_URI } from "./constants.js";
 
 // POST {{base_url}}/campaigns/
+
 export const createCampaign = async (data) => {
   const res = await fetch(`${VITE_APP_API_URI}/campaigns/`, {
     method: "POST",
@@ -12,6 +13,7 @@ export const createCampaign = async (data) => {
 };
 
 // GET {{base_url}}/campaigns/
+
 export const getCampaigns = async () => {
   const res = await fetch(`${VITE_APP_API_URI}/campaigns/`, {
     method: "GET",
@@ -21,6 +23,7 @@ export const getCampaigns = async () => {
 };
 
 // GET {{base_url}}/campaigns/:id
+
 export const getCampaign = async (id) => {
   const res = await fetch(`${VITE_APP_API_URI}/campaigns/${id}`, {
     method: "GET",

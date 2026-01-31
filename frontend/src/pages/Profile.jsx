@@ -7,22 +7,6 @@ import { uploadNgoBanner } from "../apis/ngo";
 import Toast from "../components/Toast";
 import "../style/profile.css";
 import "../style/drawer.css";
-
-/**
- * Profile page component - allows users to manage their profile information.
- *
- * Architecture: Large component handling multiple form sections (personal info,
- * preferences, security, payment methods, organization details). Uses collapsible
- * sections to organize the UI.
- *
- * Performance optimizations:
- * - useCallback for all event handlers to prevent unnecessary re-renders
- * - useMemo for derived values (isNGO, banks array, user initials)
- * - Proper useEffect dependencies to prevent stale closures
- *
- * State management: Local form state synced with auth context user object.
- * Changes are saved to backend and then reflected in auth context.
- */
 const Profile = () => {
   const { user, login } = useAuth();
   const { loading, error, fetchData } = useFetch();
@@ -88,14 +72,6 @@ const Profile = () => {
     () => ["Telebirr", "CBE", "Awash Bank", "Abyssinia Bank", "Zemen Bank"],
     [],
   );
-
-  /**
-   * Sync local state when user changes.
-   *
-   * Why only user in deps: isNGO is derived from user.role, so including it
-   * would cause the effect to run twice when user changes. We only need to
-   * sync when user object changes.
-   */
   useEffect(() => {
     if (user) {
       setPersonalInfo({
@@ -123,17 +99,9 @@ const Profile = () => {
       }
     }
   }, [user]); // Only depend on user, not isNGO (derived value)
-
-  /**
-   * Toggle card collapse state.
-   */
   const toggleCard = useCallback((card) => {
     setCollapsed((prev) => ({ ...prev, [card]: !prev[card] }));
   }, []); // No deps: setState function is stable
-
-  /**
-   * Handle personal information save.
-   */
   const handleSavePersonal = useCallback(
     async (e) => {
       e.preventDefault();
@@ -150,10 +118,6 @@ const Profile = () => {
     },
     [personalInfo, fetchData, login],
   );
-
-  /**
-   * Handle preferences save.
-   */
   const handleSavePreferences = useCallback(async () => {
     try {
       const response = await fetchData(updateProfile, {
@@ -168,10 +132,6 @@ const Profile = () => {
       console.error("Update preferences error:", err);
     }
   }, [preferences, fetchData, login]);
-
-  /**
-   * Handle NGO information save.
-   */
   const handleSaveNGOInfo = useCallback(
     async (e) => {
       e.preventDefault();
@@ -188,10 +148,6 @@ const Profile = () => {
     },
     [ngoInfo, fetchData, login],
   );
-
-  /**
-   * Handle password change.
-   */
   const handlePasswordChange = useCallback(
     async (e) => {
       e.preventDefault();
@@ -218,10 +174,6 @@ const Profile = () => {
     },
     [passwords, fetchData],
   );
-
-  /**
-   * Handle secondary email add.
-   */
   const handleAddEmail = useCallback(
     (e) => {
       e.preventDefault();
@@ -230,10 +182,6 @@ const Profile = () => {
     },
     [tempEmail],
   );
-
-  /**
-   * Handle payment method add.
-   */
   const handleAddMethod = useCallback(
     async (e) => {
       e.preventDefault();
@@ -260,10 +208,6 @@ const Profile = () => {
     },
     [newMethod, paymentMethods.length, fetchData, login],
   );
-
-  /**
-   * Handle NGO banner upload.
-   */
   const handleBannerUpload = useCallback(
     async (e) => {
       const file = e.target.files[0];
@@ -285,10 +229,6 @@ const Profile = () => {
     },
     [user, fetchData, login],
   );
-
-  /**
-   * Handle profile picture upload.
-   */
   const handleAvatarUpload = useCallback(
     async (e) => {
       const file = e.target.files[0];

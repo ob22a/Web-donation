@@ -1,9 +1,7 @@
 import { useState, useCallback } from 'react';
-
 const useFetch = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
     const fetchData = useCallback(async (apiCall, ...args) => {
         setLoading(true);
         setError(null);
